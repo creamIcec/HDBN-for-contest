@@ -10,14 +10,13 @@ coco_pairs = [(1, 6), (2, 1), (3, 1), (4, 2), (5, 3), (6, 7), (7, 1), (8, 6), (9
 
 class Feeder(Dataset):
     def __init__(self, data_path: str, data_split: str, p_interval: list=[0.95], window_size: int=64, bone: bool=False, vel: bool=False):
-        super(Feeder, self).__init__()
+        super().__init__()
         self.data_path = data_path
         self.data_split = data_split
         self.p_interval = p_interval
         self.window_size = window_size
         self.bone = bone
         self.vel = vel
-        self.load_data()
         
     def load_data(self):
         npz_data = np.load(self.data_path, allow_pickle=True)
@@ -37,7 +36,7 @@ class Feeder(Dataset):
     def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
         data_numpy = self.data[idx] # M T V C
         label = self.label[idx]
-        data_numpy = data_numpy.permute(3, 1, 2, 0) # C,T,V,M
+        #data_numpy = np.transpose(data_numpy, (3, 1, 2, 0)) # C,T,V,M
         data_numpy = np.array(data_numpy)
         valid_frame_num = np.sum(data_numpy.sum(0).sum(-1).sum(-1) != 0)
         if(valid_frame_num == 0): 

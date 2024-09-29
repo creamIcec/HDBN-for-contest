@@ -1,0 +1,13 @@
+# 虚拟环境
+/env
+
+# 数据集
+src-new.zip
+Model_inference/Mix_GCN/data
+
+# 输出
+output
+
+# 临时文件
+__pycache__
+temp

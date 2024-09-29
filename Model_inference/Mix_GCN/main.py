@@ -243,6 +243,7 @@ class Processor():
                     output_device=self.output_device)
 
     def load_data(self):
+        # 加载在这里
         Feeder = import_class(self.arg.feeder)
         self.data_loader = dict()
         if self.arg.phase == 'train':
