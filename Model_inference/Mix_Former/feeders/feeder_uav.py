@@ -41,8 +41,6 @@ class Feeder(Dataset):
         self.bone = bone
         self.vel = vel
         # self.load_data()
-        if normalization:
-            self.get_mean_map()
 
     def load_data(self):
         # data: N C V T M

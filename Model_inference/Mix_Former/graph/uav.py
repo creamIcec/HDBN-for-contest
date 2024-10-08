@@ -6,9 +6,11 @@ from graph import tools
 
 num_node = 17
 self_link = [(i, i) for i in range(num_node)]
-inward_ori_index = [(2, 3), (2, 5), (3, 4), (5, 6), (6, 7), (2, 8), (8, 9),(8,11),
-                    (9, 10), (5, 11), (11, 12), (12, 13), (1, 14), (1, 15),
-                    (14, 16), (15, 17)]
+inward_ori_index = [(10, 8), (8, 6), (9, 7), (7, 5), 
+                    (15, 13), (13, 11),(16, 14), (14, 12), 
+                    (11, 5), (12, 6), (11, 12), (5, 6), 
+                    (5, 0), (6, 0), (1, 0), (2, 0), 
+                    (3, 1), (4, 2)]
 inward = [(i - 1, j - 1) for (i, j) in inward_ori_index]
 outward = [(j, i) for (i, j) in inward]
 neighbor = inward + outward

@@ -113,6 +113,7 @@ class Model(nn.Module):
         return  torch.from_numpy(I - np.linalg.matrix_power(A_outward, k))        
 
     def forward(self, x):
+        #print(f"xshape: before:{x.shape}");  #xshape: before:torch.Size([64, 2, 64, 17, 300])
         N, C, T, V, M = x.size()
         x = rearrange(x, 'n c t v m -> (n m t) v c', m=M, v=V).contiguous()
 
@@ -120,10 +121,13 @@ class Model(nn.Module):
         p = torch.tensor(p,dtype=torch.float)
         x = p.to(x.device).expand(N*M*T, -1, -1) @ x
         
+        #print(f"xshape: graphed:{x.shape}");  #xshape: graphed:torch.Size([1228800, 17, 2])
         x = self.to_joint_embedding(x)
         x += self.pos_embedding[:, :self.num_point]
         
         x = rearrange(x, '(n m t) v c -> n (m v c) t', m=M, t=T).contiguous()
+        
+        #print(f"xshape: new:{x.shape}");  #xshape: new:torch.Size([64, 408000, 64])
         x = self.data_bn(x)
         x = rearrange(x, 'n (m v c) t -> (n m) c t v', m=M, v=V).contiguous()
 

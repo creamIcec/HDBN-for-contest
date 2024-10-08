@@ -1,5 +1,6 @@
 import numpy as np;
 from .feeder_uav import Feeder;
+from feeders import tools;
 
 class FeederUAVHuman(Feeder):
     #构造函数初始化
@@ -16,6 +17,8 @@ class FeederUAVHuman(Feeder):
                         debug, use_mmap, 
                         bone, vel);
         self.load_data();
+        if normalization:
+            self.get_mean_map()
 
     # 加载数据的方法
     def load_data(self):
@@ -38,4 +41,37 @@ class FeederUAVHuman(Feeder):
 
         # N, T, _ = self.data.shape
         # self.data = self.data.reshape((N, T, 2, 17, 3)).transpose(0, 4, 1, 3, 2)
-        self.data = self.data.transpose(0, 4, 1, 3, 2)
+        #N,C,T,V,M <-我们的
+        #N,M,C,V,T <-原来的
+        # self.data = self.data.transpose(0, 4, 1, 3, 2)
+
+    def __getitem__(self, index):
+        C, T, V, M = self.data[1].shape  #获取到每个样本数据的shape
+        data_numpy = self.data[index]    #获取到一个样本
+        #print(f"xshape: data_numpy shape:{data_numpy.shape}")
+        label = self.label[index]        #获取到对应的label
+        data_numpy = np.array(data_numpy)        #将数据转换为numpy兼容格式
+        if not(np.any(data_numpy)):
+            data_numpy = np.array(self.data[0])
+            
+        valid_frame_num = np.sum(data_numpy.sum(0).sum(-1).sum(-1) != 0) #和下一个函数冲突，全0会被报错
+        # reshape Tx(MVC) to CTVM
+
+        if(valid_frame_num == 0):
+            return np.zeros((2,64,17,300)),label,index;
+
+        data_numpy = tools.valid_crop_resize(data_numpy, valid_frame_num, self.p_interval, self.window_size)
+        if self.random_rot:
+            data_numpy = tools.random_rot(data_numpy)
+        if self.bone:
+            from .bone_pairs import ntu_pairs
+            bone_data_numpy = np.zeros_like(data_numpy)
+            for v1, v2 in ntu_pairs:
+                bone_data_numpy[:, :, v1 - 1] = data_numpy[:, :, v1 - 1] - data_numpy[:, :, v2 - 1]
+            data_numpy = bone_data_numpy
+        if self.vel:
+            data_numpy[:, :-1] = data_numpy[:, 1:] - data_numpy[:, :-1]
+            data_numpy[:, -1] = 0
+
+        #print(f"xshape: getitem: {data_numpy.shape}");
+        return data_numpy, label, index

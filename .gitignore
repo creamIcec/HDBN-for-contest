@@ -16,3 +16,7 @@ events.out.tfevents*
 # 临时文件
 __pycache__
 temp
+
+#3d -> 2d转换结果
+save_2d_pose
+3dto2d
