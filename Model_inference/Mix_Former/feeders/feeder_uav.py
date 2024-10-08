@@ -40,7 +40,7 @@ class Feeder(Dataset):
         self.random_rot = random_rot
         self.bone = bone
         self.vel = vel
-        self.load_data()
+        # self.load_data()
         if normalization:
             self.get_mean_map()
 
@@ -74,14 +74,14 @@ class Feeder(Dataset):
         return self
 
     def __getitem__(self, index):
-        C, T, V, M = self.data[1].shape
-        data_numpy = self.data[index]
-        label = self.label[index]
-        data_numpy = np.array(data_numpy)
+        C, T, V, M = self.data[1].shape  #获取到每个样本数据的shape
+        data_numpy = self.data[index]    #获取到一个样本
+        label = self.label[index]        #获取到对应的label
+        data_numpy = np.array(data_numpy)        #将数据转换为numpy兼容格式
         if not(np.any(data_numpy)):
             data_numpy = np.array(self.data[0])
-
-        valid_frame_num = np.sum(data_numpy.sum(0).sum(-1).sum(-1) != 0)#和下一个函数冲突，全0会被报错
+            
+        valid_frame_num = np.sum(data_numpy.sum(0).sum(-1).sum(-1) != 0) #和下一个函数冲突，全0会被报错
         # reshape Tx(MVC) to CTVM
         data_numpy = tools.valid_crop_resize(data_numpy, valid_frame_num, self.p_interval, self.window_size)
         if self.random_rot:

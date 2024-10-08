@@ -4,9 +4,14 @@
 # 数据集
 src-new.zip
 Model_inference/Mix_GCN/data
+Model_inference/Mix_Former/data
 
 # 输出
 output
+checkpoints
+
+#日志
+events.out.tfevents*
 
 # 临时文件
 __pycache__

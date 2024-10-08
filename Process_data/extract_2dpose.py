@@ -5,7 +5,6 @@
 @Version :   1.0 
 @Desc    :   extract 2d pose from dataset
 '''
-
 import os
 import argparse
 import numpy as np 
