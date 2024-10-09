@@ -58,7 +58,7 @@ class FeederUAVHuman(Feeder):
         # reshape Tx(MVC) to CTVM
 
         if(valid_frame_num == 0):
-            return np.zeros((2,64,17,300)),label,index;
+            data_numpy = np.zeros((2,64,17,300));
 
         data_numpy = tools.valid_crop_resize(data_numpy, valid_frame_num, self.p_interval, self.window_size)
         if self.random_rot:
