@@ -14,6 +14,7 @@ def get_parser():
         '--ctrgcn_JBM3d_Score', 
         type = str,
         default = './Model_inference/Mix_GCN/output/uav_human/ctrgcn_V1_J_3D_bone_vel/epoch1_test_score.pkl')
+    # Former, Joint,
     parser.add_argument(
         '--val_sample', 
         type = str,

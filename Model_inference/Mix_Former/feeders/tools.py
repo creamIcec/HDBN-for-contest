@@ -174,6 +174,24 @@ def _rot(rot):
     rot = rz.matmul(ry).matmul(rx)
     return rot
 
+def _rot_2d(rot):
+    """
+    输入：
+    - rot: 形状为 (T,) 的张量，表示每个时间步的旋转角度
+
+    输出：
+    - 形状为 (T, 2, 2) 的旋转矩阵
+    """
+    cos_r, sin_r = rot.cos(), rot.sin()  # 计算余弦和正弦值，形状为 (T,)
+
+    # 构造二维旋转矩阵
+    r1 = torch.stack((cos_r, -sin_r), dim=-1)  # 第一行 [cos(θ), -sin(θ)]，形状为 (T, 2)
+    r2 = torch.stack((sin_r, cos_r), dim=-1)   # 第二行 [sin(θ), cos(θ)]，形状为 (T, 2)
+
+    # 拼接形成旋转矩阵，形状为 (T, 2, 2)
+    rot_matrix = torch.stack((r1, r2), dim=1)
+
+    return rot_matrix  # 返回形状为 (T, 2, 2) 的旋转矩阵
 
 def random_rot(data_numpy, theta=0.3):
     """
@@ -181,10 +199,25 @@ def random_rot(data_numpy, theta=0.3):
     """
     data_torch = torch.from_numpy(data_numpy)
     C, T, V, M = data_torch.shape
+    #print(f"data_torch.shape:{data_torch.shape}");
     data_torch = data_torch.permute(1, 0, 2, 3).contiguous().view(T, C, V*M)  # T,3,V*M
-    rot = torch.zeros(2).uniform_(-theta, theta)# 2nd change:3->2
+    
+
+    #生成在[-theta, +theta]之间的一个符合正态分布的随机数
+    rot = torch.zeros(1).uniform_(-theta, theta)# 2nd change:3->2
+    #堆叠这个随机数，达到样本量, 形状是(T,1) 
     rot = torch.stack([rot, ] * T, dim=0)
-    rot = _rot(rot)  # T,3,3
+    #rot = _rot(rot)  # T,3,3
+    #print(rot);
+
+    #将随机数变成旋转矩阵:
+    '''
+    [[cos(θ), -sin(θ)],
+     [sin(θ), cos(θ)]]
+    '''
+    rot = _rot_2d(rot.squeeze());
+    #print(f"rot.shape:{rot.shape}");
+    #应用旋转
     data_torch = torch.matmul(rot, data_torch)
     data_torch = data_torch.view(T, C, V, M).permute(1, 0, 2, 3).contiguous()
 
