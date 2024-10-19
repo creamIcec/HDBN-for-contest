@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from sklearn.model_selection import KFold
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 import pickle
+from sklearn.model_selection import train_test_split
 
 former_names = {
     "former_b_m_r_w": "Mix_Former/mixformer_BM_r_w.pkl",
@@ -15,6 +15,14 @@ former_names = {
 gcn_names = {
     "gcn_b_m": "Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
     "gcn_j": "Mix_GCN/ctrgcn_V1_J_3d.pkl"
+}
+
+gcn_test_b_names = {
+
+}
+
+former_test_b_names = {
+
 }
 
 def extract_weighted_loss(labels):
@@ -34,7 +42,6 @@ def extract_weighted_loss(labels):
     result = np.zeros(classes, dtype=np.float32);       #保存每个类的权重的数组
     for index, count in enumerate(distro):      #对于distro中的每个元素, 取得它的类编号和样本数    
         result[index] = 1 - count / sample_count;   #计算权重
-    
     
     print(f"result:{result}");
     return result;                    #返回结果
@@ -59,7 +66,34 @@ def load_data(gcn: bool = False, former: bool = False):
     # 将所有模型的数据进行拼接
     X = np.concatenate(data_list, axis=1)
     y = np.load("test_label_A.npy")  # 使用numpy加载实际的标签
-    return X, y
+
+    # 使用简单的重复采样方法对数据进行均衡处理
+    classes, counts = np.unique(y, return_counts=True)
+    max_count = max(counts)
+    X_resampled, y_resampled = [], []
+
+    for cls in classes:
+        cls_indices = np.where(y == cls)[0]
+        num_samples_to_add = max_count - len(cls_indices)
+        resampled_indices = np.random.choice(cls_indices, num_samples_to_add, replace=True)
+        X_resampled.append(X[cls_indices])
+        X_resampled.append(X[resampled_indices])
+        y_resampled.extend([cls] * (len(cls_indices) + num_samples_to_add))
+
+    X_resampled = np.vstack(X_resampled)
+    y_resampled = np.array(y_resampled)
+    return X_resampled, y_resampled
+
+# 定义数据集分割函数
+def split_data(X, y, train_ratio=0.8):
+    '''
+    随机将数据集分割为训练集和测试集。
+    :param np.ndarray X: 特征数据。
+    :param np.ndarray y: 标签数据。
+    :param float train_ratio: 训练集的比例，默认为 0.8。
+    :return: 分割后的训练集和测试集 (X_train, X_test, y_train, y_test)。
+    '''
+    return train_test_split(X, y, train_size=train_ratio, random_state=42)
 
 # 定义元学习器模型
 class MetaLearner(nn.Module):
@@ -122,39 +156,25 @@ def eval(model, dataloader):
 
 if __name__ == "__main__":
     # 加载数据
-    X, y = load_data(gcn=False, former=True)
+    X, y = load_data(gcn=True, former=True)
 
-    # 定义交叉验证
-    k_folds = 5
-    kfold = KFold(n_splits=k_folds, shuffle=True, random_state=42)
+    # 分割数据为训练集和测试集
+    X_train, X_test, y_train, y_test = split_data(X, y, train_ratio=0.8)
 
-    # 初始化元学习器模型
-    input_dim = X.shape[1]
-    output_dim = 155  # 类别数
+    # 转换为 PyTorch 张量并创建 DataLoader
+    train_dataset = TensorDataset(torch.tensor(X_train), torch.tensor(y_train))
+    test_dataset = TensorDataset(torch.tensor(X_test), torch.tensor(y_test))
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-    # 交叉验证
-    for fold, (train_ids, test_ids) in enumerate(kfold.split(X)):
-        print(f'Fold {fold+1}/{k_folds}')
-        
-        # 分割数据
-        X_train, X_test = X[train_ids], X[test_ids]
-        y_train, y_test = y[train_ids], y[test_ids]
+    # 初始化模型
+    model = MetaLearner(input_dim=X.shape[1], output_dim=155)
 
-        # 转换为 PyTorch 张量并创建 DataLoader
-        train_dataset = TensorDataset(torch.tensor(X_train), torch.tensor(y_train))
-        test_dataset = TensorDataset(torch.tensor(X_test), torch.tensor(y_test))
-        train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-        test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    # 定义损失函数和优化器
+    weights = torch.from_numpy(extract_weighted_loss(y_train))
+    criterion = nn.CrossEntropyLoss(weight=weights)
+    optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
 
-        # 初始化模型
-        model = MetaLearner(input_dim, output_dim)
-
-        # 定义损失函数和优化器
-        # 带权重交叉熵损失
-        weights = torch.from_numpy(extract_weighted_loss(y));
-        criterion = nn.CrossEntropyLoss(weight=weights)
-        optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
-
-        # 训练并评估模型
-        train(model, train_loader, criterion, optimizer, epochs=50)
-        eval(model, test_loader)
+    # 训练并评估模型
+    train(model, train_loader, criterion, optimizer, epochs=50)
+    eval(model, test_loader)
