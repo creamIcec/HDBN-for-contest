@@ -5,6 +5,10 @@ from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 import pickle
 from sklearn.model_selection import train_test_split
+import logging
+
+# 设置日志记录
+logging.basicConfig(filename='meta_learner_training.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 former_names = {
     "former_b_m_r_w": "Mix_Former/mixformer_BM_r_w.pkl",
@@ -15,14 +19,6 @@ former_names = {
 gcn_names = {
     "gcn_b_m": "Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
     "gcn_j": "Mix_GCN/ctrgcn_V1_J_3d.pkl"
-}
-
-gcn_test_b_names = {
-
-}
-
-former_test_b_names = {
-
 }
 
 def extract_weighted_loss(labels):
@@ -38,12 +34,12 @@ def extract_weighted_loss(labels):
     for i in range(sample_count):     #对于每个样本
         distro[labels[i]] += 1;       #对应类编号的样本数+1
 
-    print(f"distro:{distro}");
+    logging.info(f"Class distribution: {distro}")
     result = np.zeros(classes, dtype=np.float32);       #保存每个类的权重的数组
     for index, count in enumerate(distro):      #对于distro中的每个元素, 取得它的类编号和样本数    
         result[index] = 1 - count / sample_count;   #计算权重
     
-    print(f"result:{result}");
+    logging.info(f"Class weights: {result}")
     return result;                    #返回结果
 
 # 加载预处理的数据
@@ -132,7 +128,9 @@ def train(model, dataloader, criterion, optimizer, epochs=20):
             correct += (predicted == y_batch).sum().item()
             total += y_batch.size(0)
         accuracy = correct / total
-        print(f"Epoch [{epoch+1}/{epochs}], Loss: {total_loss / len(dataloader):.4f}, Accuracy: {accuracy:.4f}")
+        log_message = f"Epoch [{epoch+1}/{epochs}], Loss: {total_loss / len(dataloader):.4f}, Accuracy: {accuracy:.4f}"
+        print(log_message)
+        logging.info(log_message)
 
 # 评估元学习器
 def eval(model, dataloader):
@@ -152,11 +150,13 @@ def eval(model, dataloader):
             correct += (predicted == y_batch).sum().item()
             total += y_batch.size(0)
     accuracy = correct / total
-    print(f"Evaluation Loss: {total_loss / len(dataloader):.4f}, Accuracy: {accuracy:.4f}")
+    log_message = f"Evaluation Loss: {total_loss / len(dataloader):.4f}, Accuracy: {accuracy:.4f}"
+    print(log_message)
+    logging.info(log_message)
 
 if __name__ == "__main__":
     # 加载数据
-    X, y = load_data(gcn=True, former=True)
+    X, y = load_data(gcn=True, former=False)
 
     # 分割数据为训练集和测试集
     X_train, X_test, y_train, y_test = split_data(X, y, train_ratio=0.8)
@@ -178,3 +178,8 @@ if __name__ == "__main__":
     # 训练并评估模型
     train(model, train_loader, criterion, optimizer, epochs=50)
     eval(model, test_loader)
+
+    # 保存训练好的模型权重
+    torch.save(model.state_dict(), "meta_learner_weights.pth")
+    logging.info("元学习器权重已保存为 meta_learner_weights.pth")
+    print("元学习器权重已保存为 meta_learner_weights.pth")
