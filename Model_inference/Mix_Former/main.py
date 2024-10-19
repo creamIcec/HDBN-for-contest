@@ -26,7 +26,7 @@ from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
 from torchlight import DictAction
-from utils import extract_weighted_loss
+from utils.extract_weighted_loss import extract_weighted_loss
 
 
 import resource
