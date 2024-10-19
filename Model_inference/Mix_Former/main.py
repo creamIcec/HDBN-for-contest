@@ -26,6 +26,7 @@ from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
 from torchlight import DictAction
+from utils import extract_weighted_loss
 
 
 import resource
@@ -185,6 +186,12 @@ def get_parser():
         default=0.0005,
         help='weight decay for optimizer')
     parser.add_argument('--warm_up_epoch', type=int, default=0)
+    # 添加一个新的参数: use-weighted-loss, 用于决定是否使用带权重的损失函数，以解决样本数不均匀的问题
+    parser.add_argument(
+        '--weighted-loss', 
+        type=str2bool,
+        default=False,
+        help='weighted loss for loss function. If enabled, the loss function will depend on sample count, which potentially solves the inbalanced classes problem.')
 
     return parser
 
@@ -262,7 +269,14 @@ class Processor():
         print(Model)
         self.model = Model(**self.arg.model_args)
         print(self.model)
-        self.loss = nn.CrossEntropyLoss().cuda(output_device)
+
+        if(self.arg.weighted_loss):
+            # 加载标签，用于计算weights            
+            labels = np.load(self.arg.train_feeder_args['label_path']);
+            weights = extract_weighted_loss(labels);
+            self.loss = nn.CrossEntropyLoss(weight=weights).cuda(output_device)
+        else:
+            self.loss = nn.CrossEntropyLoss().cuda(output_device)
 
         if self.arg.weights:
             #self.global_step = int(arg.weights[:-3].split('-')[-1])
