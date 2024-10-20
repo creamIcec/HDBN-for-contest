@@ -2,14 +2,15 @@ import pickle;
 import numpy as np;
 
 former_names = {
-    "former_b_m_r_w": "Mix_Former/mixformer_BM_r_w.pkl",
-    "former_b_m": "Mix_Former/mixformer_BM_r_w.pkl",
-    "former_j": "Mix_Former/mixformer_J.pkl",
+    "former_b_m_r_w": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
+    "former_b_m": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
+    "former_j": "../scores/Mix_Former/mixformer_J.pkl",
 }
 
 gcn_names = {
-    "gcn_b_m": "Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
-    "gcn_j": "Mix_GCN/ctrgcn_V1_J_3d.pkl"
+    "gcn_b_m": "../scores/Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
+    "gcn_j": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
+    "gcn_b": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
 }
 
 # 加载预处理的数据
@@ -52,7 +53,7 @@ def voting_hard(X):
 
 def weighted(X):
     # 设置每个模型的权重
-    weights = [0.05,0.05,0.1,0.6,0.2]  # 例如这里有 4 个模型
+    weights = [0.2,0.2,0.2,0.2,0.2,0.2]
     
     # 每个样本的最终预测
     final_pred = np.array([])
@@ -66,7 +67,7 @@ def weighted(X):
     return final_pred
 
 if __name__ == "__main__":
-    X, y = load_data(gcn=True, former=True);
+    X, y = load_data(gcn=True, former=False);
     result = weighted(X);
     total = y.shape[0];
     right_count = 0;

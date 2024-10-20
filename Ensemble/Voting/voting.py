@@ -2,14 +2,15 @@ import pickle;
 import numpy as np;
 
 former_names = {
-    "former_b_m_r_w": "Mix_Former/mixformer_BM_r_w.pkl",
-    "former_b_m": "Mix_Former/mixformer_BM_r_w.pkl",
-    "former_j": "Mix_Former/mixformer_J.pkl",
+    "former_b_m_r_w": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
+    "former_b_m": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
+    "former_j": "../scores/Mix_Former/mixformer_J.pkl",
 }
 
 gcn_names = {
-    "gcn_b_m": "Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
-    "gcn_j": "Mix_GCN/ctrgcn_V1_J_3d.pkl"
+    "gcn_b_m": "../scores/Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
+    "gcn_j": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
+    "gcn_b": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
 }
 
 # 加载预处理的数据
@@ -52,7 +53,7 @@ def voting_hard(X):
 
 
 if __name__ == "__main__":
-    X, y = load_data(gcn=True, former=True);
+    X, y = load_data(gcn=True, former=False);
     result = voting_hard(X);
     total = y.shape[0];
     right_count = 0;

@@ -12,14 +12,15 @@ import logging
 logging.basicConfig(filename='meta_learner_training.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 former_names = {
-    "former_b_m_r_w": "Mix_Former/mixformer_BM_r_w.pkl",
-    "former_b_m": "Mix_Former/mixformer_BM_r_w.pkl",
-    "former_j": "Mix_Former/mixformer_J.pkl",
+    "former_b_m_r_w": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
+    "former_b_m": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
+    "former_j": "../scores/Mix_Former/mixformer_J.pkl",
 }
 
 gcn_names = {
-    "gcn_b_m": "Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
-    "gcn_j": "Mix_GCN/ctrgcn_V1_J_3d.pkl"
+    "gcn_b_m": "../scores/Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
+    "gcn_j": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
+    "gcn_b": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
 }
 
 def extract_weighted_loss(labels):
@@ -169,7 +170,7 @@ class FocalLoss(nn.Module):
 
 if __name__ == "__main__":
     # 加载数据
-    X, y = load_data(gcn=True, former=True)
+    X, y = load_data(gcn=True, former=False)
 
     # 分割数据为训练集和测试集
     X_train, X_test, y_train, y_test = split_data(X, y, train_ratio=0.8)
