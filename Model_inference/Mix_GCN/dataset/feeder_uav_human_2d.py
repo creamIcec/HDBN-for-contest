@@ -1,4 +1,4 @@
-from .feeder_xyz import Feeder;
+from .feeder import Feeder;
 import torch
 import numpy as np
 import torch.nn.functional as F
@@ -10,6 +10,7 @@ coco_pairs = [(10, 8), (8, 6), (9, 7), (7, 5),
                     (11, 5), (12, 6), (11, 12), (5, 6), 
                     (5, 0), (6, 0), (1, 0), (2, 0), 
                     (3, 1), (4, 2)]
+
 class FeederUAVHuman(Feeder):
     #构造函数初始化
     def __init__(self, data_path: str, label_path: str,   #这里改成label_path, 因为我们比赛的数据集和标签分开的

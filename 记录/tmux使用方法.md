@@ -10,4 +10,6 @@
 
 `tmux detach`: 从一个窗口中退出
 
+
+
 python main.py --config ./config/team/mixformer_V1_JM.yaml --device 0

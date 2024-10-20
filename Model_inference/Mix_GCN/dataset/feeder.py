@@ -17,7 +17,6 @@ class Feeder(Dataset):
         self.window_size = window_size
         self.bone = bone
         self.vel = vel
-        self.load_data()
         
     def load_data(self):
         npz_data = np.load(self.data_path, allow_pickle=True)
@@ -37,7 +36,7 @@ class Feeder(Dataset):
     def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
         data_numpy = self.data[idx] # T M V C
         label = self.label[idx]
-        data_numpy = torch.from_numpy(data_numpy).permute(3, 0, 2, 1) # C,T,V,M
+        #data_numpy = torch.from_numpy(data_numpy).permute(3, 0, 2, 1) # C,T,V,M
         data_numpy = np.array(data_numpy)
         valid_frame_num = np.sum(data_numpy.sum(0).sum(-1).sum(-1) != 0)
         if(valid_frame_num == 0): 
