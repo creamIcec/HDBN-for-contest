@@ -63,5 +63,6 @@ warm_up_epoch: 5
 weight_decay: 0.0005
 weights: null
 work_dir: ./output/skmixf__V1_J_m_r_w
+
 #使用带权重loss
 weighted_loss: true

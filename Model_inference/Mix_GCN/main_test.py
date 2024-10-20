@@ -26,9 +26,9 @@ from tqdm import tqdm
 
 from torchlight import DictAction
 
-import resource
-rlimit = resource.getrlimit(resource.RLIMIT_NOFILE)
-resource.setrlimit(resource.RLIMIT_NOFILE, (2048, rlimit[1]))
+# import resource
+# rlimit = resource.getrlimit(resource.RLIMIT_NOFILE)
+# resource.setrlimit(resource.RLIMIT_NOFILE, (2048, rlimit[1]))
 
 def init_seed(seed):
     torch.cuda.manual_seed_all(seed)
@@ -243,7 +243,6 @@ class Processor():
                     output_device=self.output_device)
 
     def load_data(self):
-        # 加载在这里
         Feeder = import_class(self.arg.feeder)
         self.data_loader = dict()
         if self.arg.phase == 'train':
@@ -426,8 +425,12 @@ class Processor():
             f_w = open(wrong_file, 'w')
         if result_file is not None:
             f_r = open(result_file, 'w')
+        
         self.model.eval()
         self.print_log('Eval epoch: {}'.format(epoch + 1))
+        
+        all_scores = []  # 用于存储所有样本的置信度
+
         for ln in loader_name:
             loss_value = []
             score_frag = []
@@ -435,37 +438,41 @@ class Processor():
             pred_list = []
             step = 0
             process = tqdm(self.data_loader[ln], ncols=40)
+            
             for batch_idx, (data, label, index) in enumerate(process):
                 label_list.append(label)
                 with torch.no_grad():
                     data = data.float().cuda(self.output_device)
                     label = label.long().cuda(self.output_device)
                     output = self.model(data)
+                    
                     loss = self.loss(output, label)
-                    score_frag.append(output.data.cpu().numpy())
-                    loss_value.append(loss.data.item())
+                    score_frag.append(output.data.cpu().numpy())  # 置信度
 
+                    loss_value.append(loss.data.item())
                     _, predict_label = torch.max(output.data, 1)
                     pred_list.append(predict_label.data.cpu().numpy())
                     step += 1
 
-                if wrong_file is not None or result_file is not None:
+                    # 输出每个样本的预测类别
                     predict = list(predict_label.cpu().numpy())
                     true = list(label.data.cpu().numpy())
-                    for i, x in enumerate(predict):
-                        if result_file is not None:
-                            f_r.write(str(x) + ',' + str(true[i]) + '\n')
-                        if x != true[i] and wrong_file is not None:
-                            f_w.write(str(index[i]) + ',' + str(x) + ',' + str(true[i]) + '\n')
-            score = np.concatenate(score_frag)
-            loss = np.mean(loss_value)
-            if 'ucla' in self.arg.feeder:
-                self.data_loader[ln].dataset.sample_name = np.arange(len(score))
-            accuracy = self.data_loader[ln].dataset.top_k(score, 1)
-            if accuracy > self.best_acc:
-                self.best_acc = accuracy
-                self.best_acc_epoch = epoch + 1
+                    for i, pred in enumerate(predict):
+                        print(f'Sample {index[i]}: True label = {true[i]}, Predicted label = {pred}')
+                        
+                    if wrong_file is not None or result_file is not None:
+                        for i, x in enumerate(predict):
+                            if result_file is not None:
+                                f_r.write(str(x) + ',' + str(true[i]) + '\n')
+                            if x != true[i] and wrong_file is not None:
+                                f_w.write(str(index[i]) + ',' + str(x) + ',' + str(true[i]) + '\n')
 
+            score = np.concatenate(score_frag)
+            all_scores.append(score)  # 将当前 batch 的置信度添加到总列表中
+
+            loss = np.mean(loss_value)
+            accuracy = self.data_loader[ln].dataset.top_k(score, 1)
+            
             print('Accuracy: ', accuracy, ' model: ', self.arg.model_saved_name)
             if self.arg.phase == 'train':
                 self.val_writer.add_scalar('loss', loss, self.global_step)
@@ -475,14 +482,10 @@ class Processor():
                 zip(self.data_loader[ln].dataset.sample_name, score))
             self.print_log('\tMean {} loss of {} batches: {}.'.format(
                 ln, len(self.data_loader[ln]), np.mean(loss_value)))
+
             for k in self.arg.show_topk:
                 self.print_log('\tTop{}: {:.2f}%'.format(
                     k, 100 * self.data_loader[ln].dataset.top_k(score, k)))
-
-            if save_score:
-                with open('{}/epoch{}_{}_score_B.pkl'.format(
-                        self.arg.work_dir, epoch + 1, ln), 'wb') as f:
-                    pickle.dump(score_dict, f)
 
             # acc for each class:
             label_list = np.concatenate(label_list)
@@ -495,6 +498,20 @@ class Processor():
                 writer = csv.writer(f)
                 writer.writerow(each_acc)
                 writer.writerows(confusion)
+
+        # 将所有 batch 的置信度拼接为一个完整的数组
+        all_scores = np.concatenate(all_scores, axis=0)
+
+        # 确保置信度数组的形状为 (4599, 155)
+        # assert all_scores.shape == (4599, 155), f"Unexpected shape: {all_scores.shape}"
+
+        # 保存置信度为 .npy 文件 路径改这里！！！！！
+        output_dir = r'C:\AAAADATA\2024_DIGIX\ICMEW2024-Track10\Model_inference\Mix_GCN\output\ctrgcn_V1_JM_3D\eval'
+        os.makedirs(output_dir, exist_ok=True)
+        np.save(os.path.join(output_dir, 'pred_A.npy'), all_scores)
+
+        self.print_log(f"Confidence scores saved to {os.path.join(output_dir, 'pred_A.npy')}")
+
 
     def start(self):
         if self.arg.phase == 'train':

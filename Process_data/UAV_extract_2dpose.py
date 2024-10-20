@@ -1,10 +1,3 @@
-'''
-@File    :   extract_2dpose.py
-@Time    :   2024/03/23 3:00:00
-@Author  :   Jinfu Liu
-@Version :   1.0 
-@Desc    :   extract 2d pose from dataset
-'''
 import os
 import argparse
 import numpy as np 

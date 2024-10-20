@@ -5,6 +5,7 @@
 src-new.zip
 Model_inference/Mix_GCN/data
 Model_inference/Mix_Former/data
+Process_data/data
 
 # 输出
 output
@@ -20,3 +21,4 @@ temp
 #3d -> 2d转换结果
 save_2d_pose
 3dto2d
+
