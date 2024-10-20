@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 import pickle
@@ -60,25 +61,14 @@ def load_data(gcn: bool = False, former: bool = False):
             data_list.append(data)
 
     # 将所有模型的数据进行拼接
-    X = np.concatenate(data_list, axis=1)
+    X = np.array(data_list).transpose(1, 0, 2)
+    X = np.apply_along_axis(lambda x: np.exp(x) / np.sum(np.exp(x)), 1, X)  # 对每个 155 维向量进行 softmax 处理
+    X = X.reshape(2000, -1)
+    print(X.shape);
     y = np.load("test_label_A.npy")  # 使用numpy加载实际的标签
-
-    # 使用简单的重复采样方法对数据进行均衡处理
-    classes, counts = np.unique(y, return_counts=True)
-    max_count = max(counts)
-    X_resampled, y_resampled = [], []
-
-    for cls in classes:
-        cls_indices = np.where(y == cls)[0]
-        num_samples_to_add = max_count - len(cls_indices)
-        resampled_indices = np.random.choice(cls_indices, num_samples_to_add, replace=True)
-        X_resampled.append(X[cls_indices])
-        X_resampled.append(X[resampled_indices])
-        y_resampled.extend([cls] * (len(cls_indices) + num_samples_to_add))
-
-    X_resampled = np.vstack(X_resampled)
-    y_resampled = np.array(y_resampled)
-    return X_resampled, y_resampled
+    
+    # 注意: 保持数据分布，此处只是为了Stacking, 如果做任何处理将会破坏原始数据
+    return X,y
 
 # 定义数据集分割函数
 def split_data(X, y, train_ratio=0.8):
@@ -95,21 +85,23 @@ def split_data(X, y, train_ratio=0.8):
 class MetaLearner(nn.Module):
     def __init__(self, input_dim, output_dim):
         super(MetaLearner, self).__init__()
-        self.fc1 = nn.Linear(input_dim, 128)  # 减少隐藏层的神经元数量
-        self.fc2 = nn.Linear(128, 256)
-        self.dropout = nn.Dropout(0.5)  # 添加 Dropout 层
+        self.fc1 = nn.Linear(input_dim, 256)  # 减少隐藏层的神经元数量以降低模型复杂度 
+        self.bn1 = nn.BatchNorm1d(256)  # 添加 Batch Normalization 层
+        self.fc2 = nn.Linear(256,256)
+        self.bn2 = nn.BatchNorm1d(256)  # 添加 Batch Normalization 层
+        self.dropout = nn.Dropout(0.6)  # 增加 Dropout 概率以防止过拟合
         self.fc3 = nn.Linear(256, output_dim)
         self.relu = nn.ReLU()
 
     def forward(self, x):
-        x = self.relu(self.fc1(x))
+        x = self.relu(self.bn1(self.fc1(x)))
         x = self.dropout(x)  # 在第一层之后添加 Dropout
-        x = self.relu(self.fc2(x))
+        x = self.relu(self.bn2(self.fc2(x)))
         x = self.fc3(x)
         return x
 
 # 训练元学习器
-def train(model, dataloader, criterion, optimizer, epochs=20):
+def train(model, dataloader, criterion, optimizer, scheduler, epochs=50):
     model.train()
     for epoch in range(epochs):
         total_loss = 0.0
@@ -131,6 +123,7 @@ def train(model, dataloader, criterion, optimizer, epochs=20):
         log_message = f"Epoch [{epoch+1}/{epochs}], Loss: {total_loss / len(dataloader):.4f}, Accuracy: {accuracy:.4f}"
         print(log_message)
         logging.info(log_message)
+        scheduler.step(total_loss / len(dataloader))  # 调整学习率
 
 # 评估元学习器
 def eval(model, dataloader):
@@ -154,9 +147,29 @@ def eval(model, dataloader):
     print(log_message)
     logging.info(log_message)
 
+class FocalLoss(nn.Module):
+    def __init__(self, alpha=1, gamma=2, weight=None, reduction='mean'):
+        super(FocalLoss, self).__init__()
+        self.alpha = alpha
+        self.gamma = gamma
+        self.weight = weight
+        self.reduction = reduction
+
+    def forward(self, inputs, targets):
+        CE_loss = F.cross_entropy(inputs, targets, weight=self.weight, reduction='none')
+        pt = torch.exp(-CE_loss)
+        F_loss = self.alpha * (1 - pt) ** self.gamma * CE_loss
+
+        if self.reduction == 'mean':
+            return torch.mean(F_loss)
+        elif self.reduction == 'sum':
+            return torch.sum(F_loss)
+        else:
+            return F_loss
+
 if __name__ == "__main__":
     # 加载数据
-    X, y = load_data(gcn=True, former=False)
+    X, y = load_data(gcn=True, former=True)
 
     # 分割数据为训练集和测试集
     X_train, X_test, y_train, y_test = split_data(X, y, train_ratio=0.8)
@@ -168,15 +181,17 @@ if __name__ == "__main__":
     test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
     # 初始化模型
-    model = MetaLearner(input_dim=X.shape[1], output_dim=155)
+    input_dim = X.shape[1]
+    model = MetaLearner(input_dim=input_dim, output_dim=155)
 
     # 定义损失函数和优化器
     weights = torch.from_numpy(extract_weighted_loss(y_train))
-    criterion = nn.CrossEntropyLoss(weight=weights)
-    optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
+    criterion = FocalLoss(alpha=1, gamma=2, weight=weights)
+    optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=1e-4)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
 
     # 训练并评估模型
-    train(model, train_loader, criterion, optimizer, epochs=50)
+    train(model, train_loader, criterion, optimizer, scheduler, epochs=50)
     eval(model, test_loader)
 
     # 保存训练好的模型权重
