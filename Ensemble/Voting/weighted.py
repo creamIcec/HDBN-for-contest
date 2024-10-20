@@ -1,35 +1,38 @@
 import pickle;
 import numpy as np;
 
-former_names = {
-    "former_b_m_r_w": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
-    "former_b_m": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
-    "former_j": "../scores/Mix_Former/mixformer_J.pkl",
-}
 
 gcn_names = {
     "gcn_b_m": "../scores/Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
     "gcn_j": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
     "gcn_b": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
+    "gcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
+    "gcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl"
+}
+
+former_names = {
+    #"former_b_m_r_w": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
+    #"former_b_m": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
+    "former_j": "../scores/Mix_Former/mixformer_J.pkl",
 }
 
 # 加载预处理的数据
 def load_data(gcn: bool = False, former: bool = False):
     # 假设每个模型都有自己的特征集，形状为 (2000, 155)
     data_list = []
-    if former:
-        for name in former_names.values():
-            with open(name, 'rb') as f:
-                data_dict = pickle.load(f)  # 使用pickle加载字典格式的数据
-            data = np.array([data_dict[f"test_{i}"] for i in range(2000)])
-            data_list.append(data)
     if gcn:
         for name in gcn_names.values():
             with open(name, 'rb') as f:
                 data_dict = pickle.load(f)  # 使用pickle加载字典格式的数据
             data = np.array([data_dict[f"test_{i}"] for i in range(2000)])
             data_list.append(data)
-
+    if former:
+        for name in former_names.values():
+            with open(name, 'rb') as f:
+                data_dict = pickle.load(f)  # 使用pickle加载字典格式的数据
+            data = np.array([data_dict[f"test_{i}"] for i in range(2000)])
+            data_list.append(data)
+    
     data_np = np.array(data_list);
     print(data_np.shape);
 
@@ -53,7 +56,9 @@ def voting_hard(X):
 
 def weighted(X):
     # 设置每个模型的权重
-    weights = [0.2,0.2,0.2,0.2,0.2,0.2]
+    #weights = [4,9,8,5,4,0.5,1,1.2]   # 先gcn后former
+    #weights = [0.34798005,1.,0.67848884, 0.10209003, 0.00545483, 0.15840923,0.19249647,0.6435569]
+    weights = [4.37866616e-01, 1.00000000e+00, 4.33429203e-01, 7.17090016e-04, 6.09304965e-02, 9.47969778e-01]
     
     # 每个样本的最终预测
     final_pred = np.array([])
@@ -67,7 +72,7 @@ def weighted(X):
     return final_pred
 
 if __name__ == "__main__":
-    X, y = load_data(gcn=True, former=False);
+    X, y = load_data(gcn=True, former=True);
     result = weighted(X);
     total = y.shape[0];
     right_count = 0;

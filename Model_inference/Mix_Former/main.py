@@ -487,7 +487,7 @@ class Processor():
                     k, 100 * self.data_loader[ln].dataset.top_k(score, k)))
 
             if save_score:
-                with open('{}/epoch{}_{}_score.pkl'.format(
+                with open('{}/epoch{}_{}_score_B.pkl'.format(
                         self.arg.work_dir, epoch + 1, ln), 'wb') as f:
                     pickle.dump(score_dict, f)
 

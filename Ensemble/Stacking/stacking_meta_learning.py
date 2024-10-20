@@ -63,8 +63,9 @@ def load_data(gcn: bool = False, former: bool = False):
 
     # 将所有模型的数据进行拼接
     X = np.array(data_list).transpose(1, 0, 2)
-    X = np.apply_along_axis(lambda x: np.exp(x) / np.sum(np.exp(x)), 1, X)  # 对每个 155 维向量进行 softmax 处理
-    X = X.reshape(2000, -1)
+    #X = np.apply_along_axis(lambda x: np.exp(x) / np.sum(np.exp(x)), 1, X)  # 对每个 155 维向量进行 softmax 处理
+    X = np.sum(X, axis=1)  # 对每个样本的 n 个 155 维向量加和
+    #X = X.reshape(2000, -1)
     print(X.shape);
     y = np.load("test_label_A.npy")  # 使用numpy加载实际的标签
     
@@ -88,10 +89,10 @@ class MetaLearner(nn.Module):
         super(MetaLearner, self).__init__()
         self.fc1 = nn.Linear(input_dim, 256)  # 减少隐藏层的神经元数量以降低模型复杂度 
         self.bn1 = nn.BatchNorm1d(256)  # 添加 Batch Normalization 层
-        self.fc2 = nn.Linear(256,256)
-        self.bn2 = nn.BatchNorm1d(256)  # 添加 Batch Normalization 层
+        self.fc2 = nn.Linear(256,512)
+        self.bn2 = nn.BatchNorm1d(512)  # 添加 Batch Normalization 层
         self.dropout = nn.Dropout(0.6)  # 增加 Dropout 概率以防止过拟合
-        self.fc3 = nn.Linear(256, output_dim)
+        self.fc3 = nn.Linear(512, output_dim)
         self.relu = nn.ReLU()
 
     def forward(self, x):
@@ -170,7 +171,7 @@ class FocalLoss(nn.Module):
 
 if __name__ == "__main__":
     # 加载数据
-    X, y = load_data(gcn=True, former=False)
+    X, y = load_data(gcn=True, former=True)
 
     # 分割数据为训练集和测试集
     X_train, X_test, y_train, y_test = split_data(X, y, train_ratio=0.8)
@@ -192,7 +193,7 @@ if __name__ == "__main__":
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
 
     # 训练并评估模型
-    train(model, train_loader, criterion, optimizer, scheduler, epochs=50)
+    train(model, train_loader, criterion, optimizer, scheduler, epochs=80)
     eval(model, test_loader)
 
     # 保存训练好的模型权重

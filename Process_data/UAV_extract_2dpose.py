@@ -68,8 +68,8 @@ def main(train_data_path: str, train_label_path: str) -> None:
     joint_data_2d = project_to_2d(joint_data)
 
     # 保存处理后的 2D 骨架数据和标签，分别保存
-    np.save('./save_2d_pose/train_2d_data.npy', joint_data_2d)  # 保存2D骨架数据
-    np.save('./save_2d_pose/train_labels.npy', labels)          # 保存标签
+    np.save('./save_2d_pose/test_joint_B_2d.npy', joint_data_2d)  # 保存2D骨架数据
+    np.save('./save_2d_pose/test_labels_B.npy', labels)          # 保存标签
     
     print(f"All done! 数据已成功转换为2D并保存!")
 
@@ -83,4 +83,4 @@ def get_parser():
 
 # python extract_2dpose.py --test_dataset_path ../Test_dataset             
 if __name__ == "__main__":
-    main('./3dto2d/test_joint_A.npy', './3dto2d/test_label_A.npy');
+    main('./3dto2d/test_joint_B.npy', './3dto2d/polyfill_label_B.npy');

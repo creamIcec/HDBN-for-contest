@@ -11,6 +11,8 @@ gcn_names = {
     "gcn_b_m": "../scores/Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
     "gcn_j": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
     "gcn_b": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
+    "gcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
+    "gcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl"
 }
 
 # 加载预处理的数据
