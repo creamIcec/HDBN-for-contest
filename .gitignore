@@ -22,3 +22,7 @@ temp
 save_2d_pose
 3dto2d
 
+
+Model_inference/Mix_Former/config/team/test/mixformer_V1_BM_r_w.yaml
+Model_inference/Mix_GCN/config/team/ctrgcn_V1_B_2d.yaml
+Model_inference/Mix_GCN/config/team/tdgcn_V1_J.yaml
