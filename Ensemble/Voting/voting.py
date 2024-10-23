@@ -1,19 +1,27 @@
 import pickle;
 import numpy as np;
 
-former_names = {
-    "former_b_m_r_w": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
-    "former_b_m": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
-    "former_j": "../scores/Mix_Former/mixformer_J.pkl",
+gcn_names = {
+    "ctrgcn_jm_3d": "../scores/Mix_GCN/ctrgcn_V1_JM_3d.pkl",
+    "ctrgcn_b_3d": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
+    "ctrgcn_j_3d": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
+    "ctrgcn_j_3d_resample": "../scores/Mix_GCN/ctrgcn_V1_J_3d_resample.pkl",
+    "ctrgcn_b_2d": "../scores/Mix_GCN/ctrgcn_V1_B_2d.pkl",
+    "ctrgcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_J_2d.pkl",
+    #"ctrgcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
+    #"ctrgcn_jm_2d": "../scores/Mix_GCN/ctrgcn_V1_JM_2d.pkl",
+    #"tdgcn_j_2d": "../scores/Mix_GCN/tdgcn_V1_J_2d.pkl",
 }
 
-gcn_names = {
-    "gcn_b_m": "../scores/Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
-    "gcn_j": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
-    "gcn_b": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
-    "gcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
-    "gcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl"
+former_names = {
+    #"former_bm_r_w_2d": "../scores/Mix_Former/mixformer_BM_r_w_2d.pkl",
+    #"former_bm_2d": "../scores/Mix_Former/mixformer_BM_2d.pkl",
+    #"former_j_2d": "../scores/Mix_Former/mixformer_J_2d.pkl",
+    "former_j_3d": "../scores/Mix_Former/mixformer_J_3d.pkl",
+    "former_b_3d": "../scores/Mix_Former/mixformer_B_3d.pkl",
+    #"former_jm_2d": "../scores/Mix_Former/mixformer_JM_2d.pkl",
 }
+
 
 # 加载预处理的数据
 def load_data(gcn: bool = False, former: bool = False):
@@ -55,12 +63,12 @@ def voting_hard(X):
 
 
 if __name__ == "__main__":
-    X, y = load_data(gcn=True, former=False);
+    X, y = load_data(gcn=True, former=True);
     result = voting_hard(X);
     total = y.shape[0];
     right_count = 0;
     for result_i, y_i in zip(result, y):
-        print(int(result_i), y_i);
+        #print(int(result_i), y_i);
         if(result_i == y_i):
             right_count += 1;
     acc = right_count / total;

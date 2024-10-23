@@ -2,20 +2,44 @@ import pickle
 import numpy as np
 
 gcn_names = {
-    "gcn_b_m": "../scores/Mix_GCN/test/ctrgcn_V1_J_3d_bone_vel.pkl",
-    "gcn_j": "../scores/Mix_GCN/test/ctrgcn_V1_J_3d.pkl",
-    "gcn_b": "../scores/Mix_GCN/test/ctrgcn_V1_B_3d.pkl",
-    "gcn_j_2d": "../scores/Mix_GCN/test/ctrgcn_V1_BM_2d.pkl",
-    "gcn_bm_2d": "../scores/Mix_GCN/test/ctrgcn_V1_BM_2d.pkl"
+    "ctrgcn_jm_3d": "../scores/Mix_GCN/test/ctrgcn_V1_JM_3d.pkl",
+    "ctrgcn_b_3d": "../scores/Mix_GCN/test/ctrgcn_V1_B_3d.pkl",
+    "ctrgcn_j_3d": "../scores/Mix_GCN/test/ctrgcn_V1_J_3d.pkl",
+    "ctrgcn_j_3d_resample": "../scores/Mix_GCN/test/ctrgcn_V1_J_3d_resample.pkl",
+    "ctrgcn_b_2d": "../scores/Mix_GCN/test/ctrgcn_V1_B_2d.pkl",
+    "ctrgcn_j_2d": "../scores/Mix_GCN/test/ctrgcn_V1_J_2d.pkl",
+    "ctrgcn_bm_2d": "../scores/Mix_GCN/test/ctrgcn_V1_BM_2d.pkl",
+    "ctrgcn_jm_2d": "../scores/Mix_GCN/test/ctrgcn_V1_JM_2d.pkl",
+    "tdgcn_j_2d": "../scores/Mix_GCN/test/tdgcn_V1_J_2d.pkl",
 }
 
 former_names = {
-    #"former_b_m_r_w": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
-    #"former_b_m": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
-    "former_j": "../scores/Mix_Former/test/mixformer_J.pkl",
+    "former_bm_r_w_2d": "../scores/Mix_Former/test/mixformer_BM_r_w_2d.pkl",
+    "former_bm_2d": "../scores/Mix_Former/test/mixformer_BM_2d.pkl",
+    "former_j_2d": "../scores/Mix_Former/test/mixformer_J_2d.pkl",
+    "former_j_3d": "../scores/Mix_Former/test/mixformer_J_3d.pkl",
+    "former_b_3d": "../scores/Mix_Former/test/mixformer_B_3d.pkl",
+    "former_jm_2d": "../scores/Mix_Former/test/mixformer_JM_2d.pkl",
 }
 
-weights = [4.37866616e-01, 1.00000000e+00, 4.33429203e-01, 7.17090016e-04, 6.09304965e-02, 9.47969778e-01]
+
+weights = [
+           0.888425345498543, 
+           0.7548072299032186, 
+           1.057142687681162, 
+           0.6361776727168669, 
+           -0.20625044990175384,
+           0.07099191761987358,
+           0.2718989922188763, 
+           0.060246068027737174,
+           0.1492628870982368,
+           0.24095834339453534, 
+           0.251462666418275, 
+           0.13389165554582272,
+           0.4633915366414254,
+           0.4117076143975217, 
+           -0.06925064114488473
+           ]
 
 # 加载预处理的数据
 def load_data(gcn: bool = False, former: bool = False):

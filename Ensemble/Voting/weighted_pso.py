@@ -4,18 +4,27 @@ from pyswarm import pso
 import time
 
 gcn_names = {
-    "gcn_b_m": "../scores/Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
-    "gcn_j": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
-    "gcn_b": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
-    "gcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
-    "gcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl"
+    "ctrgcn_jm_3d": "../scores/Mix_GCN/ctrgcn_V1_JM_3d.pkl",
+    "ctrgcn_b_3d": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
+    "ctrgcn_j_3d": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
+    "ctrgcn_j_3d_resample": "../scores/Mix_GCN/ctrgcn_V1_J_3d_resample.pkl",
+    #"ctrgcn_b_2d": "../scores/Mix_GCN/ctrgcn_V1_B_2d.pkl",
+    #"ctrgcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_J_2d.pkl",
+    #"ctrgcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
+    #"ctrgcn_jm_2d": "../scores/Mix_GCN/ctrgcn_V1_JM_2d.pkl",
+    #"tdgcn_j_2d": "../scores/Mix_GCN/tdgcn_V1_J_2d.pkl",
 }
 
 former_names = {
-    #"former_b_m_r_w": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
-    #"former_b_m": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
-    "former_j": "../scores/Mix_Former/mixformer_J.pkl",
+    #"former_bm_r_w_2d": "../scores/Mix_Former/mixformer_BM_r_w_2d.pkl",
+    #"former_bm_2d": "../scores/Mix_Former/mixformer_BM_2d.pkl",
+    #"former_j_2d": "../scores/Mix_Former/mixformer_J_2d.pkl",
+    "former_j_3d": "../scores/Mix_Former/mixformer_J_3d.pkl",
+    "former_b_3d": "../scores/Mix_Former/mixformer_B_3d.pkl"
+    #"former_jm": "../scores/Mix_Former/mixformer_JM.pkl",
 }
+
+#weights_full = [1.8317366,0.32466949,2.,0.42696798,1.14389486,0.08981595,0.7829189,0.058318,0.56409362,1.40943682,0.01963489,0.54166845,1.38688713]
 
 # 加载预处理的数据
 def load_data(gcn: bool = False, former: bool = False):
@@ -63,7 +72,7 @@ def loss_function(weights, X, y):
 
 def optimize_weights_pso(X, y):
     lb = [0] * X.shape[1]  # 下边界为0
-    ub = [1] * X.shape[1]  # 上边界为1
+    ub = [2] * X.shape[1]  # 上边界为2
     weights, _ = pso(loss_function, lb, ub, args=(X, y), swarmsize=50, maxiter=20, debug=True)
     return weights
 

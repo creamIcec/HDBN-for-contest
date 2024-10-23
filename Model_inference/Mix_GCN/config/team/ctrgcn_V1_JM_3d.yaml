@@ -1,13 +1,13 @@
-work_dir: ./output/uav_human/ctrgcn_V1_J_3D_bone_vel
+work_dir: ./output/uav_human/ctrgcn_V1_JM_3d
 
 # feeder
 # 他们用同一个Feeder两次，两次加载不同的数据就好
 feeder: dataset.feeder_uav_human.FeederUAVHuman
 train_feeder_args: 
   # 分别指向训练集和测试集就好
-  data_path: ./data/uav-human/train_joint.npy
+  data_path: ./data/uav-human/3d/train_joint.npy
   # 根据构造函数提供标签路径就好
-  label_path: ./data/uav-human/train_label.npy
+  label_path: ./data/uav-human/3d/train_label.npy
   data_split: train
   p_interval: [0.5, 1]
   window_size: 64
@@ -15,8 +15,8 @@ train_feeder_args:
   vel: True
 
 test_feeder_args:
-  data_path: ./data/uav-human/test_joint_A.npy
-  label_path: ./data/uav-human/test_label_A.npy
+  data_path: ./data/uav-human/3d/test_joint_A.npy
+  label_path: ./data/uav-human/3d/test_label_A.npy
   data_split: test
   p_interval: [0.95]
   window_size: 64
