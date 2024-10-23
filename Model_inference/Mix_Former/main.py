@@ -273,7 +273,7 @@ class Processor():
         if(self.arg.weighted_loss):
             # 加载标签，用于计算weights            
             labels = np.load(self.arg.train_feeder_args['label_path']);
-            weights = extract_weighted_loss(labels);
+            weights = torch.from_numpy(extract_weighted_loss(labels));
             self.loss = nn.CrossEntropyLoss(weight=weights).cuda(output_device)
         else:
             self.loss = nn.CrossEntropyLoss().cuda(output_device)

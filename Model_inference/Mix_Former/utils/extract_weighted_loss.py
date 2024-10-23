@@ -6,6 +6,8 @@ def extract_weighted_loss(labels):
     :params np.ndarray labels: 加载好的标签数组。
     '''
 
+    classes = 155;
+
     sample_count = labels.shape[0];   #样本总数
     distro = np.zeros(classes);       #保存每个类有多少样本的数组，下标是类编号，对应位置的值是那个类的样本数
     
@@ -13,7 +15,7 @@ def extract_weighted_loss(labels):
         distro[labels[i]] += 1;       #对应类编号的样本数+1
 
     print(f"distro:{distro}");
-    result = np.zeros(classes);       #保存每个类的权重的数组
+    result = np.zeros(classes, dtype=np.float32);       #保存每个类的权重的数组
     for index, count in enumerate(distro):      #对于distro中的每个元素, 取得它的类编号和样本数    
         result[index] = sample_count / count;   #计算权重
     
