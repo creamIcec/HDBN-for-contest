@@ -91,3 +91,44 @@ ValueError: User-defined init_pos is out of bounds.
 2024-10-23 22:46:46,432 - pyswarms.single.global_best - INFO - Optimization finished | best cost: -0.75, best pos: [ 0.88842535  0.75480723  1.05714269  0.63617767 -0.20625045  0.07099192
   0.27189899  0.06024607  0.14926289  0.24095834  0.25146267  0.13389166
   0.46339154  0.41170761 -0.06925064]
+2024-10-24 19:32:27,077 - pyswarms.backend.generators - ERROR - Bounds and/or init_pos should be of size (16,)
+Traceback (most recent call last):
+  File "/root/autodl-tmp/ICMEW2024-Track10/env/lib/python3.10/site-packages/pyswarms/backend/generators.py", line 65, in generate_swarm
+    np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])
+ValueError: operands could not be broadcast together with shapes (50,15) (16,) 
+2024-10-24 19:34:06,703 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
+2024-10-24 19:38:43,501 - pyswarms.single.global_best - INFO - Optimization finished | best cost: -0.7475, best pos: [ 0.34207206  1.46191628  1.91728557  0.77621519  1.17762701  0.89692401
+ -0.0631819   1.73341728  0.38255843  1.59939406 -0.90130133  0.1516007
+ -0.28220815  0.81846483  0.20671064  0.65951606]
+2024-10-24 19:43:41,021 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
+2024-10-24 19:44:09,178 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
+2024-10-24 19:46:04,623 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
+2024-10-24 19:50:37,616 - pyswarms.single.global_best - INFO - Optimization finished | best cost: -0.7505, best pos: [ 0.55257407  0.88116431  1.87699994  0.9357946   1.90245785  0.7664565
+  1.2327884   1.09019768  0.78001     1.02131388  0.78686932 -0.51473959
+ -0.69021142  0.75825169  0.21228057 -0.7750505 ]
+2024-10-24 23:20:35,240 - pyswarms.backend.generators - ERROR - Bounds and/or init_pos should be of size (17,)
+Traceback (most recent call last):
+  File "/root/autodl-tmp/ICMEW2024-Track10/env/lib/python3.10/site-packages/pyswarms/backend/generators.py", line 65, in generate_swarm
+    np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])
+ValueError: operands could not be broadcast together with shapes (50,16) (17,) 
+2024-10-24 23:21:06,564 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
+2024-10-24 23:25:42,497 - pyswarms.single.global_best - INFO - Optimization finished | best cost: -0.756, best pos: [ 0.70377441  0.75222215  1.6523785   1.94299533  1.73780208  0.62180464
+  1.0646061   1.4942016   0.68594911  0.86742068  1.42546272 -0.24862632
+  0.27325021  0.81908919 -0.37189392  0.21954645  0.18217056]
+2024-10-25 17:18:20,048 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
+2024-10-25 17:23:05,740 - pyswarms.single.global_best - INFO - Optimization finished | best cost: -0.7555, best pos: [ 0.81564554 -0.31585257  1.98140654  1.28635412  1.57811273 -0.04995702
+  1.09753349  0.36646902  1.07585427  1.14996987  1.96106919  0.68649266
+ -0.13971414  0.01339554  1.7757537   0.23344276  1.7559809   1.47379113]
+2024-10-26 00:15:13,352 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
+2024-10-26 00:15:51,858 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
+2024-10-26 00:21:14,747 - pyswarms.single.global_best - INFO - Optimization finished | best cost: -0.773, best pos: [ 0.13237753  0.06877511  0.53409684  0.5792173   0.92148384  0.24034836
+  0.29180686  0.25566873  0.8409364   0.67275749  0.70105831  0.74755271
+  1.19327693  0.62166192 -0.44110597  0.54789582  0.16693778 -0.28173152
+  0.72494541  0.51058407  0.44092781]
+2024-10-26 00:34:08,161 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
+2024-10-26 00:39:33,497 - pyswarms.single.global_best - INFO - Optimization finished | best cost: -0.7695, best pos: [-0.01236384  0.39974531  0.61106761  0.48368885  0.66052466  0.0476236
+  0.28993194  0.03456443  0.41573615  0.40208586  1.08415315  0.78355782
+  0.75587136  1.21097017 -0.37313684  0.62309612  0.12981609  0.37276635
+ -0.04143735  0.68355353  0.62314388]
+2024-10-26 00:40:22,958 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
+2024-10-26 00:41:52,577 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}

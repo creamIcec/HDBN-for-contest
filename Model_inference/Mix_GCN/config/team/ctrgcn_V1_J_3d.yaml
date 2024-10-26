@@ -1,4 +1,4 @@
-work_dir: ./output/uav_human/ctrgcn_V1_J_3D
+work_dir: ./output/uav_human/ctrgcn_V1_J_3D_t
 
 # feeder
 # 他们用同一个Feeder两次，两次加载不同的数据就好

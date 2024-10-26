@@ -193,7 +193,7 @@ def _rot_2d(rot):
 
     return rot_matrix  # 返回形状为 (T, 2, 2) 的旋转矩阵
 
-def random_rot(data_numpy, theta=0.3):
+def random_rot(data_numpy, theta=0.3, channel=2):
     """
     data_numpy: C,T,V,M
     """
@@ -204,18 +204,23 @@ def random_rot(data_numpy, theta=0.3):
     
 
     #生成在[-theta, +theta]之间的一个符合正态分布的随机数
-    rot = torch.zeros(1).uniform_(-theta, theta)# 2nd change:3->2
+    rot = torch.zeros(channel).uniform_(-theta, theta)# 2nd change:3->2
     #堆叠这个随机数，达到样本量, 形状是(T,1) 
     rot = torch.stack([rot, ] * T, dim=0)
-    #rot = _rot(rot)  # T,3,3
-    #print(rot);
+    
 
     #将随机数变成旋转矩阵:
     '''
     [[cos(θ), -sin(θ)],
      [sin(θ), cos(θ)]]
     '''
-    rot = _rot_2d(rot.squeeze());
+    if channel == 3:
+        rot = _rot(rot)  # T,3,3
+        #print(rot);
+    elif channel == 2:
+        rot = _rot_2d(rot.squeeze());
+    else:
+        raise ValueError("旋转仅支持2D或3D (channel=2或3)")
     #print(f"rot.shape:{rot.shape}");
     #应用旋转
     data_torch = torch.matmul(rot, data_torch)

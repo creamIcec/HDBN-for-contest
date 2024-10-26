@@ -62,7 +62,7 @@ class FeederUAVHuman(Feeder):
 
         data_numpy = tools.valid_crop_resize(data_numpy, valid_frame_num, self.p_interval, self.window_size)
         if self.random_rot:
-            data_numpy = tools.random_rot(data_numpy)
+            data_numpy = tools.random_rot(data_numpy, channel=2)
         if self.bone:
             from .bone_pairs import ntu_pairs
             bone_data_numpy = np.zeros_like(data_numpy)

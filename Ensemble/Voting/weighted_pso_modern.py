@@ -3,17 +3,21 @@ import numpy as np
 import pyswarms as ps
 import time
 
-
 gcn_names = {
     "ctrgcn_jm_3d": "../scores/Mix_GCN/ctrgcn_V1_JM_3d.pkl",
     "ctrgcn_b_3d": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
     "ctrgcn_j_3d": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
     "ctrgcn_j_3d_resample": "../scores/Mix_GCN/ctrgcn_V1_J_3d_resample.pkl",
+    "ctrgcn_j_3d_resample_rotate": "../scores/Mix_GCN/ctrgcn_V1_J_3d_resample_rotate.pkl",
     "ctrgcn_b_2d": "../scores/Mix_GCN/ctrgcn_V1_B_2d.pkl",
     "ctrgcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_J_2d.pkl",
     "ctrgcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
     "ctrgcn_jm_2d": "../scores/Mix_GCN/ctrgcn_V1_JM_2d.pkl",
     "tdgcn_j_2d": "../scores/Mix_GCN/tdgcn_V1_J_2d.pkl",
+    "blockgcn_j_3d": "../scores/Mix_GCN/blockgcn_J_3d.pkl",
+    "blockgcn_jm_3d": "../scores/Mix_GCN/blockgcn_JM_3d.pkl",
+    "blockgcn_b_3d": "../scores/Mix_GCN/blockgcn_B_3d.pkl",
+    "blockgcn_bm_3d": "../scores/Mix_GCN/blockgcn_BM_3d.pkl"
 }
 
 former_names = {
@@ -22,6 +26,7 @@ former_names = {
     "former_j_2d": "../scores/Mix_Former/mixformer_J_2d.pkl",
     "former_j_3d": "../scores/Mix_Former/mixformer_J_3d.pkl",
     "former_b_3d": "../scores/Mix_Former/mixformer_B_3d.pkl",
+    "former_j_3d_resample_rotate": "../scores/Mix_Former/mixformer_J_3d_resample_rotate.pkl",
     "former_jm_2d": "../scores/Mix_Former/mixformer_JM_2d.pkl",
 }
 
@@ -119,23 +124,11 @@ if __name__ == "__main__":
     # 假设初始权重是均匀分布的
     init_pos = np.random.uniform(low=0, high=2, size=(50, X.shape[1]))  # 50个粒子，每个粒子有X.shape[1]个权重
     # 初始点
-    initial_weights = np.array([
-           0.888425345498543, 
-           0.7548072299032186, 
-           1.057142687681162, 
-           0.6361776727168669, 
-           -0.20625044990175384,
-           0.07099191761987358,
-           0.2718989922188763, 
-           0.060246068027737174,
-           0.1492628870982368,
-           0.24095834339453534, 
-           0.251462666418275, 
-           0.13389165554582272,
-           0.4633915366414254,
-           0.4117076143975217, 
-           -0.06925064114488473
-           ]);  #目前最好的参数
+    
+    # 77.3
+    initial_weights = np.array([0.132377534465366, 0.06877511084986354, 0.5340968388065989, 0.5792173020149407, 0.9214838373773134, 0.2403483555752039, 0.2918068623014298, 0.2556687311107895, 0.8409363952453985, 0.6727574872744368, 0.7010583117945367, 0.7475527136571108, 1.1932769273268906, 0.6216619217905547, -0.44110597372528204, 0.547895816287816, 0.16693778195985073, -0.281731522747238, 0.7249454063922118, 0.5105840725689023, 0.44092780561153583]);  #目前最好的参数
+     
+    
     init_pos = np.tile(initial_weights, (50,1));
     
     # 优化权重

@@ -2,12 +2,13 @@ import pickle;
 import numpy as np;
 
 gcn_names = {
-    "ctrgcn_jm_3d": "../scores/Mix_GCN/ctrgcn_V1_JM_3d.pkl",
+    #"ctrgcn_jm_3d": "../scores/Mix_GCN/ctrgcn_V1_JM_3d.pkl",
     "ctrgcn_b_3d": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
     "ctrgcn_j_3d": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
     "ctrgcn_j_3d_resample": "../scores/Mix_GCN/ctrgcn_V1_J_3d_resample.pkl",
+    "ctrgcn_j_3d_resample_rotate": "../scores/Mix_GCN/ctrgcn_V1_J_3d_resample_rotate.pkl",
     "ctrgcn_b_2d": "../scores/Mix_GCN/ctrgcn_V1_B_2d.pkl",
-    "ctrgcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_J_2d.pkl",
+    #"ctrgcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_J_2d.pkl",
     #"ctrgcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
     #"ctrgcn_jm_2d": "../scores/Mix_GCN/ctrgcn_V1_JM_2d.pkl",
     #"tdgcn_j_2d": "../scores/Mix_GCN/tdgcn_V1_J_2d.pkl",
@@ -17,8 +18,8 @@ former_names = {
     #"former_bm_r_w_2d": "../scores/Mix_Former/mixformer_BM_r_w_2d.pkl",
     #"former_bm_2d": "../scores/Mix_Former/mixformer_BM_2d.pkl",
     #"former_j_2d": "../scores/Mix_Former/mixformer_J_2d.pkl",
-    "former_j_3d": "../scores/Mix_Former/mixformer_J_3d.pkl",
-    "former_b_3d": "../scores/Mix_Former/mixformer_B_3d.pkl",
+    #"former_j_3d": "../scores/Mix_Former/mixformer_J_3d.pkl",
+    #"former_b_3d": "../scores/Mix_Former/mixformer_B_3d.pkl",
     #"former_jm_2d": "../scores/Mix_Former/mixformer_JM_2d.pkl",
 }
 

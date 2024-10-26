@@ -182,7 +182,7 @@ def random_rot(data_numpy, theta=0.3):
     data_torch = torch.from_numpy(data_numpy)
     C, T, V, M = data_torch.shape
     data_torch = data_torch.permute(1, 0, 2, 3).contiguous().view(T, C, V*M)  # T,3,V*M
-    rot = torch.zeros(3).uniform_(-theta, theta)
+    rot = torch.zeros(3).uniform_(-theta, theta)  #rot=[-0.1,0.2,-0.2]
     rot = torch.stack([rot, ] * T, dim=0)
     rot = _rot(rot)  # T,3,3
     data_torch = torch.matmul(rot, data_torch)
