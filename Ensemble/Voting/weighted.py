@@ -1,19 +1,33 @@
 import pickle;
 import numpy as np;
 
-
 gcn_names = {
-    "gcn_b_m": "../scores/Mix_GCN/ctrgcn_V1_J_3d_bone_vel.pkl",
-    "gcn_j": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
-    "gcn_b": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
-    "gcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
-    "gcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl"
+    "ctrgcn_jm_3d": "../scores/Mix_GCN/ctrgcn_V1_JM_3d.pkl",
+    "ctrgcn_b_3d": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
+    "ctrgcn_j_3d": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
+    "ctrgcn_j_3d_resample": "../scores/Mix_GCN/ctrgcn_V1_J_3d_resample.pkl",
+    "ctrgcn_j_3d_resample_rotate": "../scores/Mix_GCN/ctrgcn_V1_J_3d_resample_rotate.pkl",
+    "ctrgcn_b_2d": "../scores/Mix_GCN/ctrgcn_V1_B_2d.pkl",
+    "ctrgcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_J_2d.pkl",
+    "ctrgcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
+    "ctrgcn_jm_2d": "../scores/Mix_GCN/ctrgcn_V1_JM_2d.pkl",
+    "tdgcn_j_2d": "../scores/Mix_GCN/tdgcn_V1_J_2d.pkl",
+    "blockgcn_j_3d": "../scores/Mix_GCN/blockgcn_J_3d.pkl",
+    "blockgcn_jm_3d": "../scores/Mix_GCN/blockgcn_JM_3d.pkl",
+    "blockgcn_b_3d": "../scores/Mix_GCN/blockgcn_B_3d.pkl",
+    "blockgcn_bm_3d": "../scores/Mix_GCN/blockgcn_BM_3d.pkl",
+    "ctrgcn_b_3d_resample_rotate": "../scores/Mix_GCN/ctrgcn_V1_B_3d_resample_rotate.pkl",
+    "degcn_J_3d": "../scores/Mix_GCN/degcn_J_3d.pkl"
 }
 
 former_names = {
-    #"former_b_m_r_w": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
-    #"former_b_m": "../scores/Mix_Former/mixformer_BM_r_w.pkl",
-    "former_j": "../scores/Mix_Former/mixformer_J.pkl",
+    "former_bm_r_w_2d": "../scores/Mix_Former/mixformer_BM_r_w_2d.pkl",
+    "former_bm_2d": "../scores/Mix_Former/mixformer_BM_2d.pkl",
+    "former_j_2d": "../scores/Mix_Former/mixformer_J_2d.pkl",
+    "former_j_3d": "../scores/Mix_Former/mixformer_J_3d.pkl",
+    "former_b_3d": "../scores/Mix_Former/mixformer_B_3d.pkl",
+    "former_j_3d_resample_rotate": "../scores/Mix_Former/mixformer_J_3d_resample_rotate.pkl",
+    "former_jm_2d": "../scores/Mix_Former/mixformer_JM_2d.pkl",
 }
 
 # 加载预处理的数据
@@ -58,7 +72,14 @@ def weighted(X):
     # 设置每个模型的权重
     #weights = [4,9,8,5,4,0.5,1,1.2]   # 先gcn后former
     #weights = [0.34798005,1.,0.67848884, 0.10209003, 0.00545483, 0.15840923,0.19249647,0.6435569]
-    weights = [4.37866616e-01, 1.00000000e+00, 4.33429203e-01, 7.17090016e-04, 6.09304965e-02, 9.47969778e-01]
+    weights = [0.36703123328799436, 0.04961297751304006, 0.49, 
+               0.9631470375749142, 0.47983812449460156, 1.1502160878191385, 
+               0.3847325301939931, 0.36811796286587384, 0.3340636153095936, 
+               0.7388580592232195, 0.9058952410231982, 0.5763163374238653, 
+               1.1831401592245607, 0.9216701040653822, 0.2478749653105913, 
+               0.55, 0.011907380552839124, 0.5709366695534235, 
+               0.33451789438791535, 0.4604013033746419, -0.3911276825182706, 
+               0.3435142137397657, 0.24836159020878953]
     
     # 每个样本的最终预测
     final_pred = np.array([])

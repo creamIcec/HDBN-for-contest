@@ -132,3 +132,40 @@ ValueError: operands could not be broadcast together with shapes (50,16) (17,)
  -0.04143735  0.68355353  0.62314388]
 2024-10-26 00:40:22,958 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
 2024-10-26 00:41:52,577 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
+2024-10-27 22:46:14,127 - pyswarms.backend.generators - ERROR - Bounds and/or init_pos should be of size (22,)
+Traceback (most recent call last):
+  File "/root/autodl-tmp/ICMEW2024-Track10/env/lib/python3.10/site-packages/pyswarms/backend/generators.py", line 65, in generate_swarm
+    np.all(bounds[0] <= init_pos) and np.all(init_pos <= bounds[1])
+ValueError: operands could not be broadcast together with shapes (50,21) (22,) 
+2024-10-27 22:46:28,056 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 1.1}
+2024-10-27 22:52:03,104 - pyswarms.single.global_best - INFO - Optimization finished | best cost: -0.7635, best pos: [-0.19540389  0.56044536  1.85167447  1.41851924  1.7006764   1.28111759
+  1.15653304  0.80695606  1.13790083  1.61385519  1.41323749  1.02417482
+  1.90221028  1.0301845   1.09568457  1.82490868  0.30463735  1.05411108
+ -0.16420213  0.65185975  1.05092157 -0.63822924]
+2024-10-27 22:55:28,541 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 5.0}
+2024-10-27 23:08:52,050 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 5.0}
+2024-10-27 23:15:04,891 - pyswarms.single.global_best - INFO - Optimization finished | best cost: -0.765, best pos: [ 0.25042613 -0.04396049  0.49213866  1.41409093 -0.04367792  0.86348733
+  1.75935871 -0.76444253  1.65778418 -0.35250708  1.98444179 -0.26899746
+  0.78119844  1.62939966  0.54100079  1.25757367  1.72056618 -0.61201509
+ -0.25728058 -0.62029514  1.63786083  0.74851262  0.30385128]
+2024-10-28 21:37:40,598 - pyswarms.backend.generators - ERROR - Bounds and/or init_pos should be of size (27,)
+Traceback (most recent call last):
+  File "/root/autodl-tmp/ICMEW2024-Track10/env/lib/python3.10/site-packages/pyswarms/backend/generators.py", line 67, in generate_swarm
+    raise ValueError("User-defined init_pos is out of bounds.")
+ValueError: User-defined init_pos is out of bounds.
+2024-10-28 21:37:53,167 - pyswarms.backend.generators - ERROR - Bounds and/or init_pos should be of size (27,)
+Traceback (most recent call last):
+  File "/root/autodl-tmp/ICMEW2024-Track10/env/lib/python3.10/site-packages/pyswarms/backend/generators.py", line 67, in generate_swarm
+    raise ValueError("User-defined init_pos is out of bounds.")
+ValueError: User-defined init_pos is out of bounds.
+2024-10-28 21:38:01,274 - pyswarms.backend.generators - ERROR - Bounds and/or init_pos should be of size (27,)
+Traceback (most recent call last):
+  File "/root/autodl-tmp/ICMEW2024-Track10/env/lib/python3.10/site-packages/pyswarms/backend/generators.py", line 67, in generate_swarm
+    raise ValueError("User-defined init_pos is out of bounds.")
+ValueError: User-defined init_pos is out of bounds.
+2024-10-28 21:38:11,175 - pyswarms.single.global_best - INFO - Optimize for 40 iters with {'c1': 0.5, 'c2': 0.5, 'w': 5.0}
+2024-10-28 21:45:47,780 - pyswarms.single.global_best - INFO - Optimization finished | best cost: -0.7795, best pos: [-0.39327594  1.57866362  2.8718535  -0.7040674  -0.04803902  0.80435374
+  0.56849424  0.2648625  -0.21362506  0.72722113  1.85920833 -0.0496715
+  1.64191097  0.56862153 -0.13063795  1.77927328  1.865205    2.68683611
+  0.83097107  2.14359554  1.022476    0.41552382  0.57737128  0.97560102
+  0.21146006  0.54868262  3.06664121]

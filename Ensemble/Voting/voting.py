@@ -1,28 +1,38 @@
 import pickle;
 import numpy as np;
+import csv;
 
 gcn_names = {
-    #"ctrgcn_jm_3d": "../scores/Mix_GCN/ctrgcn_V1_JM_3d.pkl",
+    "ctrgcn_jm_3d": "../scores/Mix_GCN/ctrgcn_V1_JM_3d.pkl",
     "ctrgcn_b_3d": "../scores/Mix_GCN/ctrgcn_V1_B_3d.pkl",
     "ctrgcn_j_3d": "../scores/Mix_GCN/ctrgcn_V1_J_3d.pkl",
     "ctrgcn_j_3d_resample": "../scores/Mix_GCN/ctrgcn_V1_J_3d_resample.pkl",
     "ctrgcn_j_3d_resample_rotate": "../scores/Mix_GCN/ctrgcn_V1_J_3d_resample_rotate.pkl",
     "ctrgcn_b_2d": "../scores/Mix_GCN/ctrgcn_V1_B_2d.pkl",
-    #"ctrgcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_J_2d.pkl",
-    #"ctrgcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
-    #"ctrgcn_jm_2d": "../scores/Mix_GCN/ctrgcn_V1_JM_2d.pkl",
-    #"tdgcn_j_2d": "../scores/Mix_GCN/tdgcn_V1_J_2d.pkl",
+    "ctrgcn_j_2d": "../scores/Mix_GCN/ctrgcn_V1_J_2d.pkl",
+    "ctrgcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
+    "ctrgcn_jm_2d": "../scores/Mix_GCN/ctrgcn_V1_JM_2d.pkl",
+    "tdgcn_j_2d": "../scores/Mix_GCN/tdgcn_V1_J_2d.pkl",
+    "blockgcn_j_3d": "../scores/Mix_GCN/blockgcn_J_3d.pkl",
+    "blockgcn_jm_3d": "../scores/Mix_GCN/blockgcn_JM_3d.pkl",
+    "blockgcn_b_3d": "../scores/Mix_GCN/blockgcn_B_3d.pkl",
+    "blockgcn_bm_3d": "../scores/Mix_GCN/blockgcn_BM_3d.pkl",
+    "ctrgcn_b_3d_resample_rotate": "../scores/Mix_GCN/ctrgcn_V1_B_3d_resample_rotate.pkl",
+    "degcn_J_3d": "../scores/Mix_GCN/degcn_J_3d.pkl",
+    "degcn_B_3d": "../scores/Mix_GCN/degcn_B_3d.pkl"
 }
 
 former_names = {
-    #"former_bm_r_w_2d": "../scores/Mix_Former/mixformer_BM_r_w_2d.pkl",
-    #"former_bm_2d": "../scores/Mix_Former/mixformer_BM_2d.pkl",
-    #"former_j_2d": "../scores/Mix_Former/mixformer_J_2d.pkl",
-    #"former_j_3d": "../scores/Mix_Former/mixformer_J_3d.pkl",
-    #"former_b_3d": "../scores/Mix_Former/mixformer_B_3d.pkl",
-    #"former_jm_2d": "../scores/Mix_Former/mixformer_JM_2d.pkl",
+    "former_bm_r_w_2d": "../scores/Mix_Former/mixformer_BM_r_w_2d.pkl",
+    "former_bm_2d": "../scores/Mix_Former/mixformer_BM_2d.pkl",
+    "former_j_2d": "../scores/Mix_Former/mixformer_J_2d.pkl",
+    "former_j_3d": "../scores/Mix_Former/mixformer_J_3d.pkl",
+    "former_b_3d": "../scores/Mix_Former/mixformer_B_3d.pkl",
+    "former_j_3d_resample_rotate": "../scores/Mix_Former/mixformer_J_3d_resample_rotate.pkl",
+    "former_jm_2d": "../scores/Mix_Former/mixformer_JM_2d.pkl",
+    "former_b_3d_resample_rotate": "../scores/Mix_Former/mixformer_B_3d_resample_rotate.pkl",
+    "skateformer_j_3d": "../scores/Mix_Former/skateformer_B_3d.pkl"
 }
-
 
 # 加载预处理的数据
 def load_data(gcn: bool = False, former: bool = False):
@@ -56,16 +66,38 @@ def softmax(X):
 
 def voting_hard(X):
     final_pred = np.array([])
+    votes_all = [];
     for index in range(X.shape[0]):
         votes = [np.argmax(item) for item in X[index]];  #对于每个模型产生的对于每个样本的155维向量，通过softmax和argmax取得分数最高的类别
         print(votes);
+        votes_all.append(votes);
         final_pred = np.append(final_pred, max(set(votes), key=votes.count))
-    return final_pred
+    return votes_all, final_pred
 
+def save(votes_all, true_labels, gcn: bool, former: bool):
+
+    if gcn and former:
+        d = dict(**gcn_names, **former_names);
+    elif gcn:
+        d = dict(**gcn_names);
+    elif former:
+        d = dict(**former_names);
+    
+    with open('votes.csv', 'w', newline='') as csvfile:
+        fieldnames = list([name for name in d.keys()]);
+        fieldnames.append("true");
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        count = 0;
+        for votes in votes_all:
+            res = {fieldnames[i]: votes[i] for i in range(len(votes))}
+            res['true'] = true_labels[count];
+            writer.writerow(res);
+            count += 1;
 
 if __name__ == "__main__":
     X, y = load_data(gcn=True, former=True);
-    result = voting_hard(X);
+    votes_all, result = voting_hard(X);
     total = y.shape[0];
     right_count = 0;
     for result_i, y_i in zip(result, y):
@@ -74,3 +106,4 @@ if __name__ == "__main__":
             right_count += 1;
     acc = right_count / total;
     print(f"Accuracy: {acc * 100}%");
+    save(votes_all, y, gcn=True, former=True);

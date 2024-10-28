@@ -21,7 +21,11 @@ gcn_names = {
     "blockgcn_j_3d": "../scores/Mix_GCN/blockgcn_J_3d.pkl",
     "blockgcn_jm_3d": "../scores/Mix_GCN/blockgcn_JM_3d.pkl",
     "blockgcn_b_3d": "../scores/Mix_GCN/blockgcn_B_3d.pkl",
-    "blockgcn_bm_3d": "../scores/Mix_GCN/blockgcn_BM_3d.pkl"
+    "blockgcn_bm_3d": "../scores/Mix_GCN/blockgcn_BM_3d.pkl",
+    "ctrgcn_b_3d_resample_rotate": "../scores/Mix_GCN/ctrgcn_V1_B_3d_resample_rotate.pkl",
+    "degcn_J_3d": "../scores/Mix_GCN/degcn_J_3d.pkl",
+    "degcn_B_3d": "../scores/Mix_GCN/degcn_B_3d.pkl",
+    "tegcn_V1_J_3d": "../scores/Mix_GCN/tegcn_V1_J_3d.pkl"
 }
 
 former_names = {
@@ -32,7 +36,11 @@ former_names = {
     "former_b_3d": "../scores/Mix_Former/mixformer_B_3d.pkl",
     "former_j_3d_resample_rotate": "../scores/Mix_Former/mixformer_J_3d_resample_rotate.pkl",
     "former_jm_2d": "../scores/Mix_Former/mixformer_JM_2d.pkl",
+    "former_b_3d_resample_rotate": "../scores/Mix_Former/mixformer_B_3d_resample_rotate.pkl",
+    "skateformer_j_3d": "../scores/Mix_Former/skateformer_B_3d.pkl",
 }
+
+weights = [-0.3932759431416317, 1.578663620941732, 2.8718534966520393, -0.7040674026188839, -0.04803901594753768, 0.804353739137729, 0.5684942364123925, 0.2648625015420424, -0.21362505864425924, 0.7272211313760325, 1.8592083256721168, -0.049671497597091246, 1.6419109670031031, 0.5686215349024772, -0.1306379486913656, 1.779273282927985, 1.8652049994424034, 2.686836105600424, 0.8309710689689027, 2.143595543434594, 1.0224760045027292, 0.4155238249376796, 0.5773712827797061, 0.9756010165086924, 0.21146006108742688, 0.5486826163984877, 3.0666412073054667]
 
 # 加载预处理的数据
 def load_data(gcn: bool = False, former: bool = False):
@@ -86,13 +94,13 @@ def evaluate(individual, X, y):
     return -loss_function(individual, X, y),
 
 
-def optimize_weights_ga(X, y, n_generations=25, population_size=50):
+def optimize_weights_ga(X, y, n_generations=30, population_size=60):
     # 创建遗传算法工具箱
     creator.create("FitnessMax", base.Fitness, weights=(1.0,))
     creator.create("Individual", list, fitness=creator.FitnessMax)
 
     toolbox = base.Toolbox()
-    toolbox.register("attr_float", random.uniform, 0, 1)
+    toolbox.register("attr_float", random.uniform, 0, 2)
     toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_float, n=X.shape[1])
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
@@ -128,7 +136,7 @@ if __name__ == "__main__":
     X, y = load_data(gcn=True, former=True)
     start_time = time.time()
     # 使用遗传算法进行优化
-    optimized_weights = optimize_weights_ga(X, y)
+    optimized_weights = optimize_weights_ga(X, y, n_generations=40)
     end_time = time.time()
     print(f"Optimization completed in {end_time - start_time:.2f} seconds")
     print(f"Optimized Weights (GA): {optimized_weights}")

@@ -22,6 +22,13 @@ gcn_names = {
     "ctrgcn_bm_2d": "../scores/Mix_GCN/ctrgcn_V1_BM_2d.pkl",
     "ctrgcn_jm_2d": "../scores/Mix_GCN/ctrgcn_V1_JM_2d.pkl",
     "tdgcn_j_2d": "../scores/Mix_GCN/tdgcn_V1_J_2d.pkl",
+    "blockgcn_j_3d": "../scores/Mix_GCN/blockgcn_J_3d.pkl",
+    "blockgcn_jm_3d": "../scores/Mix_GCN/blockgcn_JM_3d.pkl",
+    "blockgcn_b_3d": "../scores/Mix_GCN/blockgcn_B_3d.pkl",
+    "blockgcn_bm_3d": "../scores/Mix_GCN/blockgcn_BM_3d.pkl",
+    "ctrgcn_b_3d_resample_rotate": "../scores/Mix_GCN/ctrgcn_V1_B_3d_resample_rotate.pkl",
+    "degcn_J_3d": "../scores/Mix_GCN/degcn_J_3d.pkl",
+    "degcn_B_3d": "../scores/Mix_GCN/degcn_B_3d.pkl"
 }
 
 former_names = {
@@ -30,7 +37,10 @@ former_names = {
     "former_j_2d": "../scores/Mix_Former/mixformer_J_2d.pkl",
     "former_j_3d": "../scores/Mix_Former/mixformer_J_3d.pkl",
     "former_b_3d": "../scores/Mix_Former/mixformer_B_3d.pkl",
+    "former_j_3d_resample_rotate": "../scores/Mix_Former/mixformer_J_3d_resample_rotate.pkl",
     "former_jm_2d": "../scores/Mix_Former/mixformer_JM_2d.pkl",
+    "former_b_3d_resample_rotate": "../scores/Mix_Former/mixformer_B_3d_resample_rotate.pkl",
+    "skateformer_j_3d": "../scores/Mix_Former/skateformer_B_3d.pkl"
 }
 
 def extract_weighted_loss(labels):
@@ -101,7 +111,7 @@ class MetaLearner(nn.Module):
         self.bn1 = nn.BatchNorm1d(256)  # 添加 Batch Normalization 层
         self.fc2 = nn.Linear(256,512)
         self.bn2 = nn.BatchNorm1d(512)  # 添加 Batch Normalization 层
-        self.dropout = nn.Dropout(0.6)  # 增加 Dropout 概率以防止过拟合
+        self.dropout = nn.Dropout(0.6)  # 增加 Dropout 概率以防止过强
         self.fc3 = nn.Linear(512, output_dim)
         self.relu = nn.ReLU()
 
@@ -113,13 +123,13 @@ class MetaLearner(nn.Module):
         return x
 
 # 训练元学习器
-def train(model, dataloader, criterion, optimizer, scheduler, epochs=50):
-    model.train()
+def train(model, train_loader, test_loader, criterion, optimizer, scheduler, epochs=50):
     for epoch in range(epochs):
+        model.train()
         total_loss = 0.0
         correct = 0
         total = 0
-        for X_batch, y_batch in dataloader:
+        for X_batch, y_batch in train_loader:
             X_batch, y_batch = X_batch.float(), y_batch.long()
             optimizer.zero_grad()
             outputs = model(X_batch)
@@ -132,10 +142,13 @@ def train(model, dataloader, criterion, optimizer, scheduler, epochs=50):
             correct += (predicted == y_batch).sum().item()
             total += y_batch.size(0)
         accuracy = correct / total
-        log_message = f"Epoch [{epoch+1}/{epochs}], Loss: {total_loss / len(dataloader):.4f}, Accuracy: {accuracy:.4f}"
+        log_message = f"Epoch [{epoch+1}/{epochs}], Loss: {total_loss / len(train_loader):.4f}, Accuracy: {accuracy:.4f}"
         print(log_message)
         logging.info(log_message)
-        scheduler.step(total_loss / len(dataloader))  # 调整学习率
+        scheduler.step(total_loss / len(train_loader))  # 调整学习率
+        
+        # 每一轮训练后进行评估
+        eval(model, test_loader)
 
 # 评估元学习器
 def eval(model, dataloader):
@@ -203,8 +216,7 @@ if __name__ == "__main__":
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
 
     # 训练并评估模型
-    train(model, train_loader, criterion, optimizer, scheduler, epochs=80)
-    eval(model, test_loader)
+    train(model, train_loader, test_loader, criterion, optimizer, scheduler, epochs=80)
 
     # 保存训练好的模型权重
     torch.save(model.state_dict(), "meta_learner_weights.pth")
