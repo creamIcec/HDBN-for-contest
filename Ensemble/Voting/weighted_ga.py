@@ -25,7 +25,9 @@ gcn_names = {
     "ctrgcn_b_3d_resample_rotate": "../scores/Mix_GCN/ctrgcn_V1_B_3d_resample_rotate.pkl",
     "degcn_J_3d": "../scores/Mix_GCN/degcn_J_3d.pkl",
     "degcn_B_3d": "../scores/Mix_GCN/degcn_B_3d.pkl",
-    "tegcn_V1_J_3d": "../scores/Mix_GCN/tegcn_V1_J_3d.pkl"
+    "degcn_BM_3d": "../scores/Mix_GCN/degcn_BM_3d.pkl",
+    "tegcn_V1_J_3d": "../scores/Mix_GCN/tegcn_V1_J_3d.pkl",
+    "tegcn_V1_B_3d": "../scores/Mix_GCN/tegcn_V1_B_3d.pkl"
 }
 
 former_names = {
@@ -37,10 +39,46 @@ former_names = {
     "former_j_3d_resample_rotate": "../scores/Mix_Former/mixformer_J_3d_resample_rotate.pkl",
     "former_jm_2d": "../scores/Mix_Former/mixformer_JM_2d.pkl",
     "former_b_3d_resample_rotate": "../scores/Mix_Former/mixformer_B_3d_resample_rotate.pkl",
-    "skateformer_j_3d": "../scores/Mix_Former/skateformer_B_3d.pkl",
+    "skateformer_b_3d": "../scores/Mix_Former/skateformer_B_3d.pkl",
+    "skateformer_j_3d": "../scores/Mix_Former/skateformer_J_3d.pkl"
 }
 
-weights = [-0.3932759431416317, 1.578663620941732, 2.8718534966520393, -0.7040674026188839, -0.04803901594753768, 0.804353739137729, 0.5684942364123925, 0.2648625015420424, -0.21362505864425924, 0.7272211313760325, 1.8592083256721168, -0.049671497597091246, 1.6419109670031031, 0.5686215349024772, -0.1306379486913656, 1.779273282927985, 1.8652049994424034, 2.686836105600424, 0.8309710689689027, 2.143595543434594, 1.0224760045027292, 0.4155238249376796, 0.5773712827797061, 0.9756010165086924, 0.21146006108742688, 0.5486826163984877, 3.0666412073054667]
+initial_weights =  [
+    1.9110264857820212,
+    -0.45230115036601665,
+    2.0329118340678805,
+    -0.2137147074586212,
+    1.0719177302576752,
+    -2.5685688688791624,
+    0.13268533367898,
+    -2.6796443544744273,
+    2.933392492233706,
+    4.710933343862143,
+    4.112379567022963,
+    -1.49835525647782,
+    4.4473179114161265,
+    1.32150628508955,
+    3.2450059353876664,
+    2.590427685519466,
+    3.4127252510186894,
+    3.391000548513706,
+    2.692721456990763,
+    0.49789783147079725,
+    1.9989714727193102,
+    2.042898417976021,
+    -0.593346150642901,
+    -0.18263226744378636,
+    -1.6052751449090876,
+    2.7910241019248008,
+    -0.4897537207992642,
+    1.5375553380749984,
+    3.7486831205707993,
+    7.708803728359109,
+]
+
+# 64, 66, 76
+
+#weights = [0.2931585521138443, 0.01628226700493285, 0.6175191316322914, 0.6951296975167518, 0.7206297422357253, 0.7856904981956878, 1.057594514111687, -0.1427378045893291, 1.3867152100500046, -0.7765156290692687, 2.403129591017633, -0.07183271295560331, 2.5025598936507545, 1.6555241819685287, 1.622452787594002, 1.570008806183127, 1.3705078537195217, 3.2309046500985987, 0.9905355181425732, 1.5224143262820893, 0.7184125994846191, 0.23131151423944288, 1.0274011983356686, 0.3097873124138009, 0.01670177475196635, 0.641031868807555, 1.931818771653408]
 
 # 加载预处理的数据
 def load_data(gcn: bool = False, former: bool = False):
@@ -91,7 +129,12 @@ def loss_function(weights, X, y):
     return -accuracy  # 我们希望最大化准确率，所以返回负值
 
 def evaluate(individual, X, y):
-    return -loss_function(individual, X, y),
+    return -loss_function(individual,X,y),
+    #print(performance);
+    #return performance;
+    #performance = -loss_function(individual, X, y);
+    #penalty = sum(abs(weight) for weight in individual if weight < 0);
+    #return performance - penalty,
 
 
 def optimize_weights_ga(X, y, n_generations=30, population_size=60):
@@ -100,7 +143,7 @@ def optimize_weights_ga(X, y, n_generations=30, population_size=60):
     creator.create("Individual", list, fitness=creator.FitnessMax)
 
     toolbox = base.Toolbox()
-    toolbox.register("attr_float", random.uniform, 0, 2)
+    toolbox.register("attr_float", random.uniform, -2, 10)
     toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_float, n=X.shape[1])
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
@@ -109,8 +152,16 @@ def optimize_weights_ga(X, y, n_generations=30, population_size=60):
     toolbox.register("evaluate", evaluate_with_data)
 
     toolbox.register("mate", tools.cxBlend, alpha=0.5)
-    toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.2, indpb=0.2)
+    toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.8, indpb=0.2)
     toolbox.register("select", tools.selTournament, tournsize=3)
+
+    # 设置统计信息
+    stats = tools.Statistics(lambda ind: ind.fitness.values[0])
+    stats.register("avg", np.mean)
+    stats.register("max", np.max)
+
+    # 保留全局最优个体
+    hof = tools.HallOfFame(1)
 
     # 注册并行 map
     pool = multiprocessing.Pool()
@@ -118,16 +169,85 @@ def optimize_weights_ga(X, y, n_generations=30, population_size=60):
 
     # 初始化种群
     population = toolbox.population(n=population_size)
+    for i, individual in enumerate(population):
+        individual[:] = initial_weights
 
-    # 运行遗传算法
-    algorithms.eaSimple(population, toolbox, cxpb=0.5, mutpb=0.2, ngen=n_generations, 
-                        stats=None, halloffame=None, verbose=True)
+    # 在每代开始时加入精英保留操作
+    def ea_with_elitism(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffame=None, verbose=__debug__):
+        # 确保全局最优个体保存在 halloffame 中
+        if halloffame is not None:
+            halloffame.update(population)
+        
+        # 记录每一代的日志
+        logbook = tools.Logbook()
+        logbook.header = ['gen', 'nevals'] + (stats.fields if stats else [])
 
-    # 获取最优个体
-    best_individual = tools.selBest(population, k=1)[0]
+        # 评估初始种群
+        invalid_ind = [ind for ind in population if not ind.fitness.valid]
+        fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+        for ind, fit in zip(invalid_ind, fitnesses):
+            ind.fitness.values = fit
+        if halloffame is not None:
+            halloffame.update(population)
+        record = stats.compile(population) if stats else {}
+        logbook.record(gen=0, nevals=len(invalid_ind), **record)
+        if verbose:
+            print(logbook.stream)
+
+        # 开始迭代
+        for gen in range(1, ngen + 1):
+            # 选择下一代个体
+            offspring = toolbox.select(population, len(population) - 1)
+            offspring = list(map(toolbox.clone, offspring))
+
+            # 进行交叉操作
+            for child1, child2 in zip(offspring[::2], offspring[1::2]):
+                if random.random() < cxpb:
+                    toolbox.mate(child1, child2)
+                    del child1.fitness.values
+                    del child2.fitness.values
+
+            # 进行变异操作
+            for mutant in offspring:
+                if random.random() < mutpb:
+                    toolbox.mutate(mutant)
+                    del mutant.fitness.values
+
+            # 保证精英个体不被破坏，直接加入下一代
+            elite = tools.selBest(population, k=1)[0]
+            offspring.append(elite)
+
+            # 评估新一代的个体
+            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+            fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+            for ind, fit in zip(invalid_ind, fitnesses):
+                ind.fitness.values = fit
+
+            # 更新种群
+            population[:] = offspring
+
+            # 更新 Hall of Fame 并记录统计信息
+            if halloffame is not None:
+                halloffame.update(population)
+            record = stats.compile(population) if stats else {}
+            logbook.record(gen=gen, nevals=len(invalid_ind), **record)
+            if verbose:
+                print(logbook.stream)
+
+        return population, logbook
+
+    # 使用我们定义的带精英保留的遗传算法
+    population, logbook = ea_with_elitism(
+        population, toolbox, cxpb=0.5, mutpb=0.6, ngen=n_generations, 
+        stats=stats, halloffame=hof, verbose=True
+    )
+
+    # 关闭进程池
     pool.close()
-    pool.join()  # 确保所有进程关闭
-    return best_individual
+    pool.join()
+
+    # 返回全局最优个体
+    return hof[0]
 
 def accuracy_score(y_true, y_pred):
     return np.mean(y_true == y_pred) * 100
@@ -136,7 +256,7 @@ if __name__ == "__main__":
     X, y = load_data(gcn=True, former=True)
     start_time = time.time()
     # 使用遗传算法进行优化
-    optimized_weights = optimize_weights_ga(X, y, n_generations=40)
+    optimized_weights = optimize_weights_ga(X, y, n_generations=20, population_size=60)
     end_time = time.time()
     print(f"Optimization completed in {end_time - start_time:.2f} seconds")
     print(f"Optimized Weights (GA): {optimized_weights}")

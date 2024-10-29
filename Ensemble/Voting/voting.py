@@ -19,7 +19,10 @@ gcn_names = {
     "blockgcn_bm_3d": "../scores/Mix_GCN/blockgcn_BM_3d.pkl",
     "ctrgcn_b_3d_resample_rotate": "../scores/Mix_GCN/ctrgcn_V1_B_3d_resample_rotate.pkl",
     "degcn_J_3d": "../scores/Mix_GCN/degcn_J_3d.pkl",
-    "degcn_B_3d": "../scores/Mix_GCN/degcn_B_3d.pkl"
+    "degcn_B_3d": "../scores/Mix_GCN/degcn_B_3d.pkl",
+    "degcn_BM_3d": "../scores/Mix_GCN/degcn_BM_3d.pkl",
+    "tegcn_V1_J_3d": "../scores/Mix_GCN/tegcn_V1_J_3d.pkl",
+    "tegcn_V1_B_3d": "../scores/Mix_GCN/tegcn_V1_B_3d.pkl"
 }
 
 former_names = {
@@ -31,7 +34,8 @@ former_names = {
     "former_j_3d_resample_rotate": "../scores/Mix_Former/mixformer_J_3d_resample_rotate.pkl",
     "former_jm_2d": "../scores/Mix_Former/mixformer_JM_2d.pkl",
     "former_b_3d_resample_rotate": "../scores/Mix_Former/mixformer_B_3d_resample_rotate.pkl",
-    "skateformer_j_3d": "../scores/Mix_Former/skateformer_B_3d.pkl"
+    "skateformer_b_3d": "../scores/Mix_Former/skateformer_B_3d.pkl",
+    "skateformer_j_3d": "../scores/Mix_Former/skateformer_J_3d.pkl"
 }
 
 # 加载预处理的数据

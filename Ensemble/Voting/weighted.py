@@ -17,7 +17,11 @@ gcn_names = {
     "blockgcn_b_3d": "../scores/Mix_GCN/blockgcn_B_3d.pkl",
     "blockgcn_bm_3d": "../scores/Mix_GCN/blockgcn_BM_3d.pkl",
     "ctrgcn_b_3d_resample_rotate": "../scores/Mix_GCN/ctrgcn_V1_B_3d_resample_rotate.pkl",
-    "degcn_J_3d": "../scores/Mix_GCN/degcn_J_3d.pkl"
+    "degcn_J_3d": "../scores/Mix_GCN/degcn_J_3d.pkl",
+    "degcn_B_3d": "../scores/Mix_GCN/degcn_B_3d.pkl",
+    "degcn_BM_3d": "../scores/Mix_GCN/degcn_BM_3d.pkl",
+    "tegcn_V1_J_3d": "../scores/Mix_GCN/tegcn_V1_J_3d.pkl",
+    "tegcn_V1_B_3d": "../scores/Mix_GCN/tegcn_V1_B_3d.pkl"
 }
 
 former_names = {
@@ -28,6 +32,9 @@ former_names = {
     "former_b_3d": "../scores/Mix_Former/mixformer_B_3d.pkl",
     "former_j_3d_resample_rotate": "../scores/Mix_Former/mixformer_J_3d_resample_rotate.pkl",
     "former_jm_2d": "../scores/Mix_Former/mixformer_JM_2d.pkl",
+    "former_b_3d_resample_rotate": "../scores/Mix_Former/mixformer_B_3d_resample_rotate.pkl",
+    "skateformer_b_3d": "../scores/Mix_Former/skateformer_B_3d.pkl",
+    "skateformer_j_3d": "../scores/Mix_Former/skateformer_J_3d.pkl"
 }
 
 # 加载预处理的数据
@@ -72,14 +79,9 @@ def weighted(X):
     # 设置每个模型的权重
     #weights = [4,9,8,5,4,0.5,1,1.2]   # 先gcn后former
     #weights = [0.34798005,1.,0.67848884, 0.10209003, 0.00545483, 0.15840923,0.19249647,0.6435569]
-    weights = [0.36703123328799436, 0.04961297751304006, 0.49, 
-               0.9631470375749142, 0.47983812449460156, 1.1502160878191385, 
-               0.3847325301939931, 0.36811796286587384, 0.3340636153095936, 
-               0.7388580592232195, 0.9058952410231982, 0.5763163374238653, 
-               1.1831401592245607, 0.9216701040653822, 0.2478749653105913, 
-               0.55, 0.011907380552839124, 0.5709366695534235, 
-               0.33451789438791535, 0.4604013033746419, -0.3911276825182706, 
-               0.3435142137397657, 0.24836159020878953]
+    weights = [1.4668139067381416, 1.1816778798085186, 1.1591087279604277, 
+               -0.9248643623406638, 1.1737676062929492, 2.0906060168609195, 1.2345609820218932, -3.032847242194509, 4.370294270393593, 1.0496717844872845, 1.8317057128810603, 0.11062871156959181, 5.149027684302668, 2.885539401460868, 1.0182407713698152, 2.6652137459295644, 3.7565384820528083, 2.723063979264471, 4.8818672170370565, 2.5786177554654275, 0.5524049118916912, 0.2967090288104616, -0.6875776468142071, 0.41173909877491544, 1.8485930929652135, 1.1199114172729159, 0.759049337941745, 0.8234006575695129, 
+               3.595903457316497, 1.880281708476684]
     
     # 每个样本的最终预测
     final_pred = np.array([])
