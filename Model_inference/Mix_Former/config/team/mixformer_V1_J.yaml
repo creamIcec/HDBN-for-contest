@@ -35,8 +35,8 @@ step:
 test_batch_size: 64
 test_feeder_args:
   bone: false
-  data_path: ./data/uav-human/2d/test_2d_joint.npy
-  label_path: ./data/uav-human/2d/test_labels.npy
+  data_path: ./data/2d/val_joint_C_2d.npy
+  label_path: ./data/2d/val_label_C_2d.npy
   debug: false
   p_interval:
   - 0.95
@@ -45,8 +45,8 @@ test_feeder_args:
   window_size: 64
 train_feeder_args:
   bone: false
-  data_path: ./data/uav-human/2d/train_2d_joint.npy
-  label_path: ./data/uav-human/2d/train_labels.npy 
+  data_path: ./data/2d/train_joint_C_2d.npy
+  label_path: ./data/2d/train_label_C_2d.npy
   normalization: false
   p_interval:
   - 0.5
@@ -62,4 +62,4 @@ train_feeder_args:
 warm_up_epoch: 5
 weight_decay: 0.0005
 weights: null
-work_dir: ./output/skmixf__V1_J
+work_dir: ./output/national/skmixf_J

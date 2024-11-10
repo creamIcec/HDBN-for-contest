@@ -59,7 +59,7 @@ def project_to_2d(joint_data):
 
     return joint_data_2d
 
-def main(train_data_path: str, train_label_path: str) -> None:
+def main(train_data_path: str, data_name: str,  train_label_path: str, label_name: str) -> None:
     # 加载骨架数据和标签
     joint_data = np.load(train_data_path)  # 5维数组 N C V T M
     labels = np.load(train_label_path)     # 1维数组 N，标签
@@ -68,8 +68,12 @@ def main(train_data_path: str, train_label_path: str) -> None:
     joint_data_2d = project_to_2d(joint_data)
 
     # 保存处理后的 2D 骨架数据和标签，分别保存
-    np.save('./save_2d_pose/test_joint_B_2d.npy', joint_data_2d)  # 保存2D骨架数据
-    np.save('./save_2d_pose/test_labels_B.npy', labels)          # 保存标签
+
+
+    with open(f"./save_2d_pose/{data_name}.npy", "wb") as f:
+        np.save(f, joint_data_2d)  # 保存2D骨架数据
+    with open(f"./save_2d_pose/{label_name}.npy", "wb") as f:
+        np.save(f, labels)          # 保存标签
     
     print(f"All done! 数据已成功转换为2D并保存!")
 
@@ -83,4 +87,4 @@ def get_parser():
 
 # python extract_2dpose.py --test_dataset_path ../Test_dataset             
 if __name__ == "__main__":
-    main('./3dto2d/test_joint_B.npy', './3dto2d/polyfill_label_B.npy');
+    main('./3dto2d/test_joint_C.npy', "test_joint_C_2d", './3dto2d/polyfill_test_label_C.npy', "polyfill_test_label_C_2d");
